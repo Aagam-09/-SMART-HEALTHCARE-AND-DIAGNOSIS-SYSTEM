@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Doctor Login - Aayushya Healthcare{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+{% endblock %}
+
+{% block content %}
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-icon doctor-auth-icon">
+                    <i class="fas fa-user-md"></i>
+                </div>
+                <h2 class="mb-2">Doctor Login</h2>
+                <p class="text-muted">Welcome back, Doctor! Please sign in to your account.</p>
+            </div>
+            
+            <form id="doctorLoginForm">
+                <div class="form-group">
+                    <label for="identifier" class="form-label">Email, Phone, or Doctor ID</label>
+                    <input type="text" class="form-control" id="identifier" name="identifier" required 
+                           placeholder="Enter your email, phone number, or doctor ID">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" required 
+                           placeholder="Enter your password">
+                </div>
+                
+                <button type="submit" class="btn btn-auth btn-doctor">
+                    <span class="loading-spinner" style="display: none;"></span>
+                    <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                </button>
+            </form>
+            
+            <div class="auth-links">
+                <p class="mb-2">Don't have an account? 
+                    <a href="{{ url_for('auth.doctor_register_page') }}">Register as Doctor</a>
+                </p>
+                <p class="mb-0">Are you a patient? 
+                    <a href="{{ url_for('auth.patient_login_page') }}">Patient Login</a>
+                </p>
+                <p class="mt-3">
+                    <a href="{{ url_for('main.index') }}">← Back to Home</a>
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,543 @@
+{% extends "base.html" %}
+
+{% block title %}Appointment Details - Aayushya Healthcare{% endblock %}
+
+{% block extra_css %}
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f8f9fa;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+        }
+
+        .detail-container {
+            padding: 30px 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .detail-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.15);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header-info h1 {
+            margin: 0 0 10px 0;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .header-info p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 16px;
+        }
+
+        .appointment-id {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .detail-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #667eea;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-title i {
+            color: #667eea;
+            font-size: 22px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-size: 14px;
+            color: #666;
+            font-weight: 600;
+            flex: 0 0 120px;
+        }
+
+        .info-value {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+            flex: 1;
+            text-align: right;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-scheduled {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .status-confirmed {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-completed {
+            background: #f3e5f5;
+            color: #6a1b9a;
+        }
+
+        .status-cancelled {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .queue-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .queue-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .queue-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .queue-stat {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .queue-number {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .queue-label {
+            font-size: 12px;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        .medical-info {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #27ae60;
+        }
+
+        .medical-field {
+            margin-bottom: 20px;
+        }
+
+        .medical-field:last-child {
+            margin-bottom: 0;
+        }
+
+        .field-label {
+            font-size: 12px;
+            color: #666;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .field-value {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.5;
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 3px solid #27ae60;
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #f8f9ff;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        @media (max-width: 600px) {
+            .detail-container {
+                padding: 20px 15px;
+            }
+
+            .detail-header {
+                padding: 25px;
+            }
+
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .queue-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light shadow-sm sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">
+                <i class="fas fa-hospital-alt me-2 gradient-text"></i>
+                <span class="gradient-text fw-bold">Aayushya Healthcare</span>
+            </a>
+
+            <div class="ms-auto d-flex align-items-center gap-3">
+                <!-- <label class="d-flex align-items-center gap-2">
+                    <span class="d-none d-md-inline">Dark Mode</span>
+                    <div class="dark-mode-switch">
+                        <input type="checkbox" id="darkModeToggle">
+                        <span class="dark-mode-slider"></span>
+                    </div>
+                </label> -->
+
+                {% if session.user_id %}
+                    <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-danger btn-sm">
+                        Logout
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="detail-container">
+        <!-- Header -->
+        <div class="detail-header">
+            <div class="header-content">
+                <div class="header-info">
+                    <h1><i class="fas fa-calendar-check"></i> Appointment Details</h1>
+                    <p>Complete information about your scheduled appointment</p>
+                </div>
+                <div class="appointment-id">
+                    {{ appointment.appointment_id }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Queue Information (if available) -->
+        {% if queue %}
+        <div class="queue-section">
+            <div class="queue-title">
+                <i class="fas fa-users"></i> Queue Information
+            </div>
+            <div class="queue-stats">
+                <div class="queue-stat">
+                    <div class="queue-number">#{{ queue.queue_number }}</div>
+                    <div class="queue-label">Your Position</div>
+                </div>
+                <div class="queue-stat">
+                    <div class="queue-number">{{ queue.queue_number - 1 }}</div>
+                    <div class="queue-label">Patients Ahead</div>
+                </div>
+                <div class="queue-stat">
+                    <div class="queue-number">{{ (queue.queue_number - 1) * (hospital.average_consultation_time or 5) }}</div>
+                    <div class="queue-label">Est. Wait (min)</div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Main Details Grid -->
+        <div class="detail-grid">
+            <!-- Appointment Information -->
+            <div class="detail-card">
+                <div class="card-title">
+                    <i class="fas fa-info-circle"></i>
+                    Appointment Information
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Date:</span>
+                    <span class="info-value">
+                        {{ appointment.appointment_date.strftime('%A, %B %d, %Y') if appointment.appointment_date else 'N/A' }}
+                    </span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Time:</span>
+                    <span class="info-value">
+                        {{ appointment.appointment_time.strftime('%I:%M %p') if appointment.appointment_time else 'N/A' }}
+                    </span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Status:</span>
+                    <span class="info-value">
+                        <span class="status-badge status-{{ appointment.status }}">
+                            {{ appointment.status.title() }}
+                        </span>
+                    </span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Priority:</span>
+                    <span class="info-value">{{ appointment.emergency_level.title() if appointment.emergency_level else 'Normal' }}</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Booked On:</span>
+                    <span class="info-value">
+                        {{ appointment.created_at.strftime('%B %d, %Y at %I:%M %p') if appointment.created_at else 'N/A' }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Doctor & Hospital Information -->
+            <div class="detail-card">
+                <div class="card-title">
+                    <i class="fas fa-hospital-alt"></i>
+                    Doctor & Hospital
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Doctor:</span>
+                    <span class="info-value">Dr. {{ doctor.full_name if doctor else 'N/A' }}</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Specialization:</span>
+                    <span class="info-value">{{ doctor.specialization if doctor else 'N/A' }}</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Experience:</span>
+                    <span class="info-value">{{ doctor.experience_years if doctor else 'N/A' }} years</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Hospital:</span>
+                    <span class="info-value">{{ hospital.name if hospital else 'N/A' }}</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Address:</span>
+                    <span class="info-value">{{ hospital.address if hospital else 'N/A' }}</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Phone:</span>
+                    <span class="info-value">{{ hospital.phone if hospital else 'N/A' }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Medical Information -->
+        <div class="medical-info">
+            <div class="card-title">
+                <i class="fas fa-file-medical"></i>
+                Medical Information
+            </div>
+
+            <div class="medical-field">
+                <div class="field-label">Symptoms / Reason for Visit</div>
+                <div class="field-value">
+                    {{ appointment.symptoms_description if appointment.symptoms_description else 'Not provided' }}
+                </div>
+            </div>
+
+            {% if appointment.current_medications %}
+            <div class="medical-field">
+                <div class="field-label">Current Medications</div>
+                <div class="field-value">{{ appointment.current_medications }}</div>
+            </div>
+            {% endif %}
+
+            {% if appointment.medical_history_summary %}
+            <div class="medical-field">
+                <div class="field-label">Medical History</div>
+                <div class="field-value">{{ appointment.medical_history_summary }}</div>
+            </div>
+            {% endif %}
+
+            {% if appointment.allergies %}
+            <div class="medical-field">
+                <div class="field-label">Allergies</div>
+                <div class="field-value">{{ appointment.allergies }}</div>
+            </div>
+            {% endif %}
+
+            {% if appointment.patient_notes %}
+            <div class="medical-field">
+                <div class="field-label">Additional Notes</div>
+                <div class="field-value">{{ appointment.patient_notes }}</div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Actions -->
+        <div class="actions">
+            <a href="{{ url_for('patient.dashboard') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+
+            {% if appointment.status in ['scheduled', 'confirmed'] %}
+            <button class="btn btn-danger" onclick="cancelAppointment('{{ appointment.appointment_id }}')">
+                <i class="fas fa-times"></i> Cancel Appointment
+            </button>
+            {% endif %}
+
+            <button class="btn btn-primary" onclick="window.print()">
+                <i class="fas fa-print"></i> Print Details
+            </button>
+        </div>
+    </div>
+
+    <script>
+        async function cancelAppointment(appointmentId) {
+            if (!confirm('Are you sure you want to cancel this appointment?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/patient/api/cancel-appointment/${appointmentId}`, {
+                    method: 'POST'
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Appointment cancelled successfully');
+                    window.location.href = '/patient/dashboard';
+                } else {
+                    alert('Error: ' + (data.message || 'Could not cancel appointment'));
+                }
+            } catch (error) {
+                console.error('Error cancelling appointment:', error);
+                alert('Error cancelling appointment');
+            }
+        }
+    </script>
+{% endblock %}

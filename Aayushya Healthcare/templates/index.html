@@ -1,0 +1,642 @@
+{% extends "base.html" %}
+
+{% block title %}Aayushya Healthcare - Smart Hospital Queue Management{% endblock %}
+
+{% block content %}
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg shadow-sm sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">
+                <i class="fas fa-hospital-alt me-2 gradient-text"></i>
+                <span class="gradient-text fw-bold">Aayushya Healthcare</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#how-it-works">How It Works</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contact</a>
+                    </li>
+                    <li class="nav-item ms-lg-3 d-flex align-items-center">
+                        <!-- Dark Mode Toggle Switch -->
+                        <label class="dark-mode-label me-3">
+                            <span class="d-none d-md-inline">Dark Mode</span>
+                            <div class="dark-mode-switch">
+                                <input type="checkbox" id="darkModeToggle">
+                                <span class="dark-mode-slider"></span>
+                            </div>
+                        </label>
+                        
+                        {% if session.user_id %}
+                            {% if session.user_type == 'patient' %}
+                                <a href="{{ url_for('patient.dashboard') }}" class="btn btn-outline-primary me-2">
+                                    <i class="fas fa-user-injured me-1"></i> Dashboard
+                                </a>
+                            {% else %}
+                                <a href="{{ url_for('doctor.dashboard') }}" class="btn btn-custom me-2">
+                                    <i class="fas fa-user-md me-1"></i> Dashboard
+                                </a>
+                            {% endif %}
+                            <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-danger">
+                                <i class="fas fa-sign-out-alt me-1"></i> Logout
+                            </a>
+                        {% else %}
+                            <a href="{{ url_for('auth.patient_login_page') }}" class="btn btn-outline-primary me-2">
+                                <i class="fas fa-user-injured me-1"></i> Patient Login
+                            </a>
+                            <a href="{{ url_for('auth.doctor_login_page') }}" class="btn btn-custom">
+                                <i class="fas fa-user-md me-1"></i> Doctor Login
+                            </a>
+                        {% endif %}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section" id="home">
+        <div class="container position-relative">
+            <div class="row align-items-center">
+                <div class="col-lg-6 animate-fade-in-up">
+                    <h1 class="display-4 hero-title fw-bold mb-4">Smart Healthcare Access with Real-Time Queue Management</h1>
+                    <p class="lead hero-desc mb-4">
+                        Find nearby <span class="highlight">hospitals</span>,
+                        check <span class="highlight">real-time wait times</span>,
+                        and book <span class="highlight">appointments</span>.
+                        Skip the queue, not the care.
+                    </p>
+                    
+                    <!-- User Type Selection -->
+                    <div class="user-selection mb-4">
+                        <h4 class="hero-subtitle mb-4">How would you like to proceed?</h4>
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="user-selection-card patient" onclick="showUserOptions('patient')">
+                                    <div class="user-icon patient-icon floating-element">
+                                        <i class="fas fa-user-injured"></i>
+                                    </div>
+                                    <h4 class="text-center mb-3">I'm a Patient</h4>
+                                    <p class="text-center text-muted mb-0">Find hospitals, check wait times, book appointments, and manage your healthcare journey.</p>
+                                    <div class="text-center mt-3">
+                                        <span class="badge" style="background: var(--primary-blue);">Click to continue</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="user-selection-card doctor" onclick="showUserOptions('doctor')">
+                                    <div class="user-icon doctor-icon floating-element">
+                                        <i class="fas fa-user-md"></i>
+                                    </div>
+                                    <h4 class="text-center mb-3">I'm a Doctor</h4>
+                                    <p class="text-center text-muted mb-0">Manage appointments, view patient records, and streamline your consultation schedule.</p>
+                                    <div class="text-center mt-3">
+                                        <span class="badge" style="background: var(--primary-green);">Click to continue</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex flex-wrap gap-3 mt-4">
+                        <a href="{{ url_for('main.nearby_hospitals') }}" class="btn btn-light btn-lg btn-custom">
+                            <i class="fas fa-calendar-check me-2"></i>Book Appointment
+                        </a>
+                        <a href="#features" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-play-circle me-2"></i>Learn More
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6 mt-5 mt-lg-0 animate-fade-in-up" style="animation-delay: 0.2s;">
+                    <div class="position-relative floating-element">
+                        <img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
+                             class="img-fluid rounded-3 shadow-lg" alt="Hospital Queue System" style="border: 5px solid white;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- User Options Modal -->
+    <div class="modal fade user-options-modal" id="userOptionsModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Patient Options</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div id="patientOptions">
+                        <a href="{{ url_for('auth.patient_login_page') }}" class="btn modal-option-btn patient-option">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login as Patient
+                        </a>
+                        <a href="{{ url_for('auth.patient_register_page') }}" class="btn modal-option-btn patient-option-outline">
+                            <i class="fas fa-user-plus me-2"></i>Register as New Patient
+                        </a>
+                    </div>
+                    <div id="doctorOptions" style="display: none;">
+                        <a href="{{ url_for('auth.doctor_login_page') }}" class="btn modal-option-btn doctor-option">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login as Doctor
+                        </a>
+                        <a href="{{ url_for('auth.doctor_register_page') }}" class="btn modal-option-btn doctor-option-outline">
+                            <i class="fas fa-user-md me-2"></i>Register as New Doctor
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Section -->
+    <section class="py-5" style="background: var(--light-bg);">
+        <div class="container">
+            <div class="row text-center">
+                <div class="col-md-3 col-6 mb-4">
+                    <div class="stat-card">
+                        <h3 class="stat-number">10K+</h3>
+                        <p class="text-muted">Patients Served</p>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar" style="width: 95%; background: linear-gradient(135deg, var(--primary-blue), var(--primary-green)) !important;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mb-4">
+                    <div class="stat-card">
+                        <h3 class="stat-number">200+</h3>
+                        <p class="text-muted">Doctors Registered</p>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar" style="width: 85%; background: linear-gradient(135deg, var(--primary-green), var(--secondary-green)) !important;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mb-4">
+                    <div class="stat-card">
+                        <h3 class="stat-number">65%</h3>
+                        <p class="text-muted">Wait Time Reduced</p>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar" style="width: 65%; background: linear-gradient(135deg, var(--warning-amber), #ffcc00) !important;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mb-4">
+                    <div class="stat-card">
+                        <h3 class="stat-number">24/7</h3>
+                        <p class="text-muted">System Availability</p>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar" style="width: 100%; background: linear-gradient(135deg, var(--accent-teal), var(--light-teal)) !important;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-5" id="features">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="section-title mb-3 gradient-text">Key Features</h2>
+                    <p class="text-muted lead">Our system is designed to address the core challenges in hospital queue and appointment management.</p>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card feature-card p-4">
+                        <div class="card-body text-center">
+                            <div class="feature-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <h4 class="card-title mb-3">Online Appointment Booking</h4>
+                            <p class="card-text text-muted">Patients can book appointments online from anywhere, reducing physical queues and waiting time.</p>
+                            <div class="mt-3">
+                                <span class="badge" style="background: linear-gradient(135deg, var(--primary-blue), var(--primary-green))">Patient Feature</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card feature-card p-4">
+                        <div class="card-body text-center">
+                            <div class="feature-icon">
+                                <i class="fas fa-user-md"></i>
+                            </div>
+                            <h4 class="card-title mb-3">Smart Doctor Scheduling</h4>
+                            <p class="card-text text-muted">AI-powered scheduling optimizes doctor availability, reduces idle time, and prevents overbooking.</p>
+                            <div class="mt-3">
+                                <span class="badge" style="background: linear-gradient(135deg, var(--primary-green), var(--secondary-green))">Doctor Feature</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card feature-card p-4">
+                        <div class="card-body text-center">
+                            <div class="feature-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h4 class="card-title mb-3">Real-time Queue Management</h4>
+                            <p class="card-text text-muted">Live queue tracking with estimated wait times and notifications for patients and doctors.</p>
+                            <div class="mt-3">
+                                <span class="badge" style="background: linear-gradient(135deg, var(--warning-amber), #ffcc00)">Real-time</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card feature-card p-4">
+                        <div class="card-body text-center">
+                            <div class="feature-icon">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <h4 class="card-title mb-3">Automated Notifications</h4>
+                            <p class="card-text text-muted">SMS and email reminders for upcoming appointments, queue status updates, and delays.</p>
+                            <div class="mt-3">
+                                <span class="badge" style="background: linear-gradient(135deg, var(--accent-teal), var(--light-teal))">Notifications</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card feature-card p-4">
+                        <div class="card-body text-center">
+                            <div class="feature-icon">
+                                <i class="fas fa-chart-pie"></i>
+                            </div>
+                            <h4 class="card-title mb-3">Analytics Dashboard</h4>
+                            <p class="card-text text-muted">Comprehensive reports and insights on patient flow, doctor performance, and hospital efficiency.</p>
+                            <div class="mt-3">
+                                <span class="badge" style="background: linear-gradient(135deg, var(--danger-red), #ff6666)">Analytics</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card feature-card p-4">
+                        <div class="card-body text-center">
+                            <div class="feature-icon">
+                                <i class="fas fa-mobile-alt"></i>
+                            </div>
+                            <h4 class="card-title mb-3">Mobile Responsive</h4>
+                            <p class="card-text text-muted">Fully responsive design that works seamlessly on desktops, tablets, and mobile phones.</p>
+                            <div class="mt-3">
+                                <span class="badge" style="background: linear-gradient(135deg, #666666, #999999)">Mobile</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="py-5" style="background: var(--light-bg);" id="how-it-works">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="section-title mb-3 gradient-text">How It Works</h2>
+                    <p class="text-muted lead">Simple three-step process for patients to book appointments and manage their hospital visits.</p>
+                </div>
+            </div>
+            
+            <div class="row align-items-center">
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <div class="step-card text-center">
+                        <div class="step-number">1</div>
+                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 100px; height: 100px; background: linear-gradient(135deg, var(--primary-blue), var(--primary-green));">
+                            <i class="fas fa-user-plus fa-3x text-white"></i>
+                        </div>
+                        <h3 class="mb-3">Register / Login</h3>
+                        <p class="text-muted">Create your patient account or login to existing account to access the appointment system.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <div class="step-card text-center">
+                        <div class="step-number">2</div>
+                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 100px; height: 100px; background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));">
+                            <i class="fas fa-calendar-check fa-3x text-white"></i>
+                        </div>
+                        <h3 class="mb-3">Book Appointment</h3>
+                        <p class="text-muted">Select your doctor, choose available time slot, and confirm your appointment booking.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="step-card text-center">
+                        <div class="step-number">3</div>
+                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 100px; height: 100px; background: linear-gradient(135deg, var(--warning-amber), #ffcc00);">
+                            <i class="fas fa-hospital-user fa-3x text-white"></i>
+                        </div>
+                        <h3 class="mb-3">Track & Visit</h3>
+                        <p class="text-muted">Track your queue position in real-time, receive notifications, and visit hospital at your time.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-5">
+                <a href="{{ url_for('main.nearby_hospitals') }}" class="btn btn-primary btn-lg btn-custom px-5">
+                    <i class="fas fa-rocket me-2"></i>Get Started Now
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-5" style="background: linear-gradient(135deg, var(--primary-blue), var(--primary-green));">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8 text-white">
+                    <h2 class="mb-3">Ready to Transform Your Hospital Experience?</h2>
+                    <p class="lead mb-0">Join thousands of patients and doctors who are already benefiting from our smart queue management system.</p>
+                </div>
+                <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+                    <a href="{{ url_for('auth.patient_register_page') }}" class="btn btn-light btn-lg me-3">
+                        <i class="fas fa-user-injured me-2"></i>Patient Portal
+                    </a>
+                    <a href="{{ url_for('auth.doctor_register_page') }}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-user-md me-2"></i>Doctor Portal
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h4 class="mb-4">
+                        <i class="fas fa-hospital-alt me-2 gradient-text"></i>
+                        <span class="gradient-text">Aayushya Healthcare</span>
+                    </h4>
+                    <p class="text-muted">A smart healthcare access system with real-time queue management, location-based hospital search, and intelligent travel time calculations for optimal patient care.</p>
+                    <div class="d-flex mt-4">
+                        <a href="#" class="btn btn-outline-primary btn-sm rounded-circle me-2" style="border-color: var(--primary-blue); color: var(--primary-blue);">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-primary btn-sm rounded-circle me-2" style="border-color: var(--primary-blue); color: var(--primary-blue);">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-primary btn-sm rounded-circle me-2" style="border-color: var(--primary-blue); color: var(--primary-blue);">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-primary btn-sm rounded-circle" style="border-color: var(--primary-blue); color: var(--primary-blue);">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h5 class="mb-4">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="{{ url_for('main.index') }}" class="text-decoration-none">Home</a></li>
+                        <li class="mb-2"><a href="#features" class="text-decoration-none">Features</a></li>
+                        <li class="mb-2"><a href="#how-it-works" class="text-decoration-none">How It Works</a></li>
+                        <li class="mb-2"><a href="{{ url_for('main.nearby_hospitals') }}" class="text-decoration-none">Find Hospitals</a></li>
+                        <li class="mb-2"><a href="#contact" class="text-decoration-none">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h5 class="mb-4">Services</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="{{ url_for('auth.patient_register_page') }}" class="text-decoration-none">Appointment Booking</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none">Queue Management</a></li>
+                        <li class="mb-2"><a href="{{ url_for('auth.doctor_register_page') }}" class="text-decoration-none">Doctor Scheduling</a></li>
+                        <li class="mb-2"><a href="{{ url_for('auth.patient_login_page') }}" class="text-decoration-none">Patient Portal</a></li>
+                        <li class="mb-2"><a href="{{ url_for('auth.doctor_login_page') }}" class="text-decoration-none">Doctor Portal</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h5 class="mb-4">Contact Us</h5>
+                    <ul class="list-unstyled text-muted">
+                        <li class="mb-3">
+                            <i class="fas fa-map-marker-alt me-2" style="color: var(--primary-blue);"></i>
+                            123 Healthcare Street, Medical City
+                        </li>
+                        <li class="mb-3">
+                            <i class="fas fa-phone me-2" style="color: var(--primary-blue);"></i>
+                            +1 (555) 123-4567
+                        </li>
+                        <li class="mb-3">
+                            <i class="fas fa-envelope me-2" style="color: var(--primary-blue);"></i>
+                            info@aayushyahealthcare.com
+                        </li>
+                        <li class="mb-3">
+                            <i class="fas fa-clock me-2" style="color: var(--primary-blue);"></i>
+                            Mon-Fri: 9:00 AM - 6:00 PM
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <hr class="my-5">
+            
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="text-muted mb-0">&copy; 2024 Aayushya Healthcare. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <a href="#" class="text-muted text-decoration-none me-3">Privacy Policy</a>
+                    <a href="#" class="text-muted text-decoration-none">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+{% endblock %}
+
+{% block extra_css %}
+    <style>
+        /* Hero Text Improvement */
+        .hero-title{
+            color:#FFFFFF;
+            font-weight:700;
+            text-shadow:0 3px 8px rgba(0,0,0,0.25);
+        }
+
+        .hero-desc{
+            color:#E3F2FD;   /* soft light blue */
+            font-size:1.1rem;
+        }
+
+        .hero-subtitle{
+            color:#FFFFFF;
+            font-weight:600;
+        }
+
+        /* Highlight keywords if needed */
+        .highlight{
+            color:#00E676;
+            font-weight:600;
+        }
+        
+        /* Modal Enhancement */
+        .user-options-modal .modal-content {
+            border-radius: 20px;
+            overflow: hidden;
+            border: none;
+            background: var(--card-light);
+        }
+        
+        body.dark-mode .user-options-modal .modal-content {
+            background: var(--card-dark);
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-green));
+            color: white;
+            border-bottom: none;
+        }
+        
+        .modal-option-btn {
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: var(--transition);
+            margin-bottom: 10px;
+            text-align: center;
+            display: block;
+            text-decoration: none;
+        }
+        
+        .modal-option-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .patient-option {
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: white;
+            border: none;
+        }
+        
+        .patient-option-outline {
+            background: transparent;
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+        }
+        
+        body.dark-mode .patient-option-outline {
+            color: var(--secondary-blue);
+            border-color: var(--secondary-blue);
+        }
+        
+        .doctor-option {
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            color: white;
+            border: none;
+        }
+        
+        .doctor-option-outline {
+            background: transparent;
+            color: var(--primary-green);
+            border: 2px solid var(--primary-green);
+        }
+        
+        body.dark-mode .doctor-option-outline {
+            color: var(--secondary-green);
+            border-color: var(--secondary-green);
+        }
+        
+        /* How It Works Enhancement */
+        .step-card {
+            background: var(--card-light);
+            border-radius: 20px;
+            padding: 40px 20px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        body.dark-mode .step-card {
+            background: var(--card-dark);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+        
+        .step-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary-blue);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .step-number {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-green));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        /* Footer Enhancement */
+        footer {
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+            padding: 80px 0 30px;
+            border-top: none;
+            position: relative;
+            color: var(--text-light);
+        }
+        
+        body.dark-mode footer {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            color: var(--text-dark);
+        }
+        
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-blue), var(--primary-green), var(--accent-teal));
+        }
+        
+        footer a {
+            color: var(--primary-blue);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        footer a:hover {
+            color: var(--dark-blue);
+            text-decoration: underline;
+        }
+        
+        body.dark-mode footer a {
+            color: var(--light-teal);
+        }
+        
+        body.dark-mode footer a:hover {
+            color: var(--secondary-green);
+        }
+    </style>
+{% endblock %}

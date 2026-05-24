@@ -1,0 +1,436 @@
+{% extends "base.html" %}
+
+{% block title %}Doctor Profile - Aayushya Healthcare{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <style>
+        .navbar-nav .nav-link {
+            color: #666;
+            font-weight: 500;
+            padding: 8px 16px;
+            margin: 0 4px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .navbar-nav .nav-link.active {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.15);
+            font-weight: 600;
+        }
+
+        .navbar-toggler {
+            border: none;
+            padding: 8px;
+        }
+
+        .navbar-toggler:focus {
+            box-shadow: none;
+        }
+
+        /* Dark Mode Switch */
+        .dark-mode-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+        }
+
+        .dark-mode-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .dark-mode-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 24px;
+        }
+
+        .dark-mode-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        .dark-mode-switch input:checked + .dark-mode-slider {
+            background-color: #667eea;
+        }
+
+        .dark-mode-switch input:checked + .dark-mode-slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Enhanced Doctor Details in Header - Better contrast in dark mode */
+        .doctor-id-text,
+        .doctor-details-text {
+            color: rgba(255, 255, 255, 0.95) !important;
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 5px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .doctor-id-text {
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .doctor-details-text {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        /* Ensure dashboard header text is always white and readable */
+        .dashboard-header h2 {
+            color: white !important;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Enhanced Profile Summary Card */
+        .profile-item {
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 0;
+        }
+
+        .profile-item:last-child {
+            border-bottom: none;
+        }
+
+        .profile-label {
+            color: var(--muted-color);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .profile-value {
+            color: var(--text-color);
+            font-size: 15px;
+            font-weight: 600;
+            display: block;
+        }
+
+        /* Form labels for better readability */
+        .form-label {
+            color: var(--text-color);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        /* Section headings in form */
+        h5 {
+            color: var(--text-color);
+            font-weight: 700;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light shadow-sm sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">
+                <i class="fas fa-hospital-alt me-2 gradient-text"></i>
+                <span class="gradient-text fw-bold">Aayushya Healthcare</span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('doctor.dashboard') }}">
+                            <i class="fas fa-th-large me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('doctor.profile') }}">
+                            <i class="fas fa-user-circle me-1"></i>Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <label class="d-flex align-items-center gap-2 mb-0 ms-2">
+                            <span class="d-none d-md-inline" style="font-size: 14px;">Dark Mode</span>
+                            <div class="dark-mode-switch">
+                                <input type="checkbox" id="darkModeToggle">
+                                <span class="dark-mode-slider"></span>
+                            </div>
+                        </label>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-danger btn-sm ms-2">
+                            <i class="fas fa-sign-out-alt me-1"></i>Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <div class="container">
+            <!-- Profile Header -->
+            <div class="dashboard-header">
+                <div class="dashboard-welcome">
+                    <div class="dashboard-avatar doctor-avatar">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <div class="dashboard-info">
+                        <h2>Dr. {{ doctor.full_name }}</h2>
+                        <p class="doctor-id-text">Doctor ID: {{ doctor.doctor_id }}</p>
+                        <p class="doctor-details-text">{{ doctor.specialization }} • {{ user.email }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Profile Form -->
+                <div class="col-lg-8">
+                    <div class="dashboard-card">
+                        <div class="dashboard-card-header">
+                            <div class="dashboard-card-icon card-icon-green">
+                                <i class="fas fa-user-edit"></i>
+                            </div>
+                            <h4>Professional Profile</h4>
+                        </div>
+                        
+                        <form id="doctorProfileForm">
+                            <h5 class="mb-3">Personal Information</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="fullName" class="form-label">Full Name</label>
+                                        <input type="text" class="form-control" id="fullName" name="full_name" 
+                                               value="{{ doctor.full_name or '' }}" required pattern="^[A-Za-z.-]{2,} [A-Za-z.-]{2,}(?: [A-Za-z.-]{2,})?$">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="email" class="form-label">Email</label>
+                                        <input type="email" class="form-control" id="email" name="email" 
+                                               value="{{ user.email or '' }}" readonly>
+                                        <small class="text-muted">Contact admin to change email</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="mobile" class="form-label">Mobile Number</label>
+                                        <input type="tel" class="form-control" id="mobile" name="mobile" 
+                                               value="{{ user.mobile or '' }}" readonly>
+                                        <small class="text-muted">Contact admin to change mobile</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="alternatePhone" class="form-label">Alternate Phone</label>
+                                        <input type="tel" class="form-control" id="alternatePhone" name="alternate_phone" 
+                                               value="{{ doctor.alternate_phone or '' }}" pattern="^[6-9]\d{9}$">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="dateOfBirth" class="form-label">Date of Birth</label>
+                                        <input type="date" class="form-control" id="dateOfBirth" name="date_of_birth" 
+                                               value="{{ doctor.date_of_birth.strftime('%Y-%m-%d') if doctor.date_of_birth else '' }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="gender" class="form-label">Gender</label>
+                                        <select class="form-control" id="gender" name="gender">
+                                            <option value="" hidden selected disabled>Select Gender</option>
+                                            <option value="Male" {{ 'selected' if doctor.gender == 'Male' else '' }}>Male</option>
+                                            <option value="Female" {{ 'selected' if doctor.gender == 'Female' else '' }}>Female</option>
+                                            <option value="Other" {{ 'selected' if doctor.gender == 'Other' else '' }}>Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h5 class="mt-4 mb-3">Professional Information</h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="licenseNumber" class="form-label">Medical License Number</label>
+                                        <input type="text" class="form-control" id="licenseNumber" name="license_number" 
+                                               value="{{ doctor.license_number or '' }}" readonly>
+                                        <small class="text-muted">Contact admin to change license number</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="specialization" class="form-label">Specialization</label>
+                                        <input type="text" class="form-control" id="specialization" name="specialization" 
+                                               value="{{ doctor.specialization or '' }}" required pattern="^[A-Za-z]+( [A-Za-Z]+)*$">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="qualification" class="form-label">Qualification</label>
+                                        <input type="text" class="form-control" id="qualification" name="qualification" 
+                                               value="{{ doctor.qualification or '' }}" placeholder="e.g., MBBS, MD" pattern="^[A-Za-z.,() ]+$">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="experienceYears" class="form-label">Experience (Years)</label>
+                                        <input type="number" class="form-control" id="experienceYears" name="experience_years" 
+                                               value="{{ doctor.experience_years or '' }}" min="0" max="50 ">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h5 class="mt-4 mb-3">Work Information</h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="hospitalName" class="form-label">Hospital/Clinic Name</label>
+                                        <input type="text" class="form-control" id="hospitalName" name="hospital_name" 
+                                               value="{{ doctor.hospital_name or '' }}" pattern="^[A-Za-z0-9.&\- ]{3,60}$">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="department" class="form-label">Department</label>
+                                        <input type="text" class="form-control" id="department" name="department" 
+                                               value="{{ doctor.department or '' }}" pattern="^[A-Za-z]+( [A-Za-z]+)*$">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="consultationFee" class="form-label">Consultation Fee ($)</label>
+                                        <input type="number" class="form-control" id="consultationFee" name="consultation_fee" 
+                                               value="{{ doctor.consultation_fee or '' }}" min="0" step="0.01">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="address" class="form-label">Address</label>
+                                <textarea class="form-control" id="address" name="address" rows="3" minlength="5" maxlength="120">{{ doctor.address or '' }}</textarea>
+                            </div>
+
+                            <h5 class="mt-4 mb-3">Availability</h5>
+                            
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="availableDays" class="form-label">Available Days</label>
+                                        <input type="text" class="form-control" id="availableDays" name="available_days" 
+                                               value="{{ doctor.available_days or '' }}" placeholder="Mon, Tue, Wed, Thu, Fri, Sat, Sun">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="availableFrom" class="form-label">Available From</label>
+                                        <input type="time" class="form-control" id="availableFrom" name="available_from" 
+                                               value="{{ doctor.available_from.strftime('%H:%M') if doctor.available_from else '' }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="availableTo" class="form-label">Available To</label>
+                                        <input type="time" class="form-control" id="availableTo" name="available_to" 
+                                               value="{{ doctor.available_to.strftime('%H:%M') if doctor.available_to else '' }}">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="text-center mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <span class="loading-spinner" style="display: none;"></span>
+                                    <i class="fas fa-save me-2"></i>Update Profile
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Profile Summary -->
+                <div class="col-lg-4">
+                    <div class="profile-card">
+                        <div class="profile-header doctor-header">
+                            <div class="profile-avatar">
+                                <i class="fas fa-user-md"></i>
+                            </div>
+                            <h4 class="text-white mb-0">Dr. {{ doctor.full_name }}</h4>
+                            <p class="text-white-50 mb-0">{{ doctor.doctor_id }}</p>
+                        </div>
+                        <div class="profile-body">
+                            <div class="profile-item">
+                                <span class="profile-label">Specialization</span>
+                                <span class="profile-value">{{ doctor.specialization }}</span>
+                            </div>
+                            <div class="profile-item">
+                                <span class="profile-label">License</span>
+                                <span class="profile-value">{{ doctor.license_number }}</span>
+                            </div>
+                            <div class="profile-item">
+                                <span class="profile-label">Experience</span>
+                                <span class="profile-value">{{ doctor.experience_years or 'Not specified' }} years</span>
+                            </div>
+                            <div class="profile-item">
+                                <span class="profile-label">Hospital</span>
+                                <span class="profile-value">{{ doctor.hospital_name or 'Independent Practice' }}</span>
+                            </div>
+                            <div class="profile-item">
+                                <span class="profile-label">Consultation Fee</span>
+                                <span class="profile-value">${{ doctor.consultation_fee or 'Not set' }}</span>
+                            </div>
+                            <div class="text-center mt-4">
+                                <a href="{{ url_for('doctor.dashboard') }}" class="btn btn-outline-primary">
+                                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

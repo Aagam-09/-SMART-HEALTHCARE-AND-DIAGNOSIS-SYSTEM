@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Registration | Aayushya Healthcare</title>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap-grid.min.css" rel="stylesheet">
+
+    <style>
+        /* =========================================
+           1. ROOT VARIABLES & RESET
+           ========================================= */
+        :root {
+            --primary: #3674fb;
+            --primary-dark: #3b64ec;
+            --secondary: #263238;
+            --accent: #ff4081;
+            --success: #00c853;
+            --warning: #ffd600;
+            --error: #ff1744;
+            
+            --bg-light: #f0f4f8;
+            --card-light: #ffffff;
+            --text-light: #37474f;
+            --input-bg-light: #f5f7fa;
+
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
+            --shadow-lg: 0 15px 35px rgba(0,0,0,0.1);
+            --radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-light);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Background Decoration */
+        .bg-shape {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.6;
+        }
+        .shape-1 { top: -100px; left: -100px; width: 500px; height: 500px; background: rgba(37, 99, 235, 0.2); }
+        .shape-2 { bottom: -100px; right: -100px; width: 400px; height: 400px; background: rgba(59, 130, 246, 0.15); }
+
+        /* =========================================
+           2. MAIN LAYOUT & CARD
+           ========================================= */
+        .main-wrapper {
+            width: 100%;
+            max-width: 1100px;
+            padding: 20px;
+            perspective: 1000px;
+        }
+
+        .reg-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            display: flex;
+            min-height: 700px;
+            border: 1px solid rgba(255,255,255,0.5);
+            transition: var(--transition);
+        }
+
+        /* Left Side - Hero */
+        .hero-section {
+            flex: 0 0 40%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 60px 40px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content h1 { font-size: 2.5rem; margin-bottom: 20px; font-weight: 700; line-height: 1.2; }
+        .hero-content p { font-size: 1rem; opacity: 0.9; line-height: 1.6; }
+        .hero-footer { font-size: 0.9rem; opacity: 0.8; }
+        
+        .hero-circles div {
+            position: absolute;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+
+        /* Right Side - Form */
+        .form-section {
+            flex: 1;
+            padding: 50px;
+            position: relative;
+            background: var(--card-light);
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+        }
+
+        /* =========================================
+           3. PROGRESS STEPS
+           ========================================= */
+        .progress-container {
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .steps-wrapper {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            z-index: 1;
+        }
+
+        .progress-line-bg {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: #e0e0e0;
+            z-index: 0;
+            border-radius: 4px;
+        }
+
+        .progress-line-fill {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            height: 4px;
+            background: var(--primary);
+            z-index: 0;
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .step-item {
+            text-align: center;
+            background: var(--card-light);
+            padding: 0 10px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .step-circle {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            color: #757575;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin: 0 auto 10px;
+            border: 2px solid transparent;
+            transition: var(--transition);
+        }
+
+        .step-item.active .step-circle {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 0 0 5px rgba(0, 191, 165, 0.2);
+        }
+
+        .step-item.completed .step-circle {
+            background: var(--primary);
+            color: white;
+        }
+
+        .step-label { font-size: 0.85rem; font-weight: 500; color: #999; }
+        .step-item.active .step-label { color: var(--primary); font-weight: 700; }
+
+        /* =========================================
+           4. FORM ELEMENTS & FLOATING LABELS
+           ========================================= */
+        .form-part {
+            display: none;
+            animation: fadeIn 0.5s ease forwards;
+        }
+        .form-part.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .input-group { position: relative; margin-bottom: 25px; }
+
+        .form-control, .form-select {
+            width: 100%;
+            padding: 15px 15px;
+            border: 2px solid transparent;
+            background: var(--input-bg-light);
+            border-radius: 12px;
+            font-size: 1rem;
+            color: var(--text-light);
+            outline: none;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background: white;
+            border-color: var(--primary);
+            box-shadow: 0 5px 15px rgba(0, 191, 165, 0.1);
+        }
+
+        .floating-label {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 0.95rem;
+            pointer-events: none;
+            transition: 0.2s ease all;
+            background: transparent;
+            padding: 0 5px;
+        }
+
+        .form-control:focus ~ .floating-label,
+        .form-control:not(:placeholder-shown) ~ .floating-label,
+        .form-select:focus ~ .floating-label,
+        .form-select:valid ~ .floating-label {
+            top: 0;
+            transform: translateY(-50%) scale(0.85);
+            background: var(--card-light);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Checkbox & Radio */
+        .checkbox-group { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 10px; }
+        .custom-check {
+            position: relative;
+            padding-left: 30px;
+            cursor: pointer;
+            user-select: none;
+            font-size: 0.9rem;
+        }
+        .custom-check input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 20px;
+            width: 20px;
+            background-color: var(--input-bg-light);
+            border-radius: 5px;
+            transition: 0.2s;
+        }
+        .custom-check:hover input ~ .checkmark { background-color: #ddd; }
+        .custom-check input:checked ~ .checkmark { background-color: var(--primary); }
+        .checkmark:after { content: ""; position: absolute; display: none; }
+        .custom-check input:checked ~ .checkmark:after { display: block; }
+        .custom-check .checkmark:after { left: 7px; top: 3px; width: 5px; height: 10px; border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+
+        /* File Upload Zone */
+        .upload-zone {
+            border: 2px dashed #ccc;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--input-bg-light);
+            position: relative;
+        }
+        .upload-zone:hover { border-color: var(--primary); background: rgba(0, 191, 165, 0.05); }
+        .upload-zone i { font-size: 2rem; color: #999; margin-bottom: 10px; }
+        .file-preview { margin-top: 10px; display: none; }
+        .file-preview img { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; }
+        .file-name { font-size: 0.8rem; color: var(--primary); display: block; margin-top: 5px; }
+
+        /* Password Strength */
+        /* .password-strength { height: 4px; border-radius: 2px; background: #e0e0e0; margin-top: 8px; overflow: hidden; } */
+        .strength-bar { height: 100%; width: 0; transition: width 0.3s, background 0.3s; }
+
+        /* =========================================
+           5. BUTTONS & NAV
+           ========================================= */
+        .btn-group { display: flex; justify-content: space-between; margin-top: 30px; }
+
+        .btn {
+            padding: 12px 30px;
+            border-radius: 50px;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 15px rgba(0, 191, 165, 0.4); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 191, 165, 0.6); background: var(--primary-dark); }
+        
+        .btn-secondary { background: transparent; color: #999; border: 2px solid #e0e0e0; }
+        .btn-secondary:hover { border-color: var(--text-light); color: var(--text-light); }
+
+        .btn-success { background: var(--success); color: white; width: 100%; justify-content: center; font-size: 1.1rem; }
+        .btn-success:hover { background: #00a042; box-shadow: 0 4px 15px rgba(0, 200, 83, 0.4); }
+
+        /* =========================================
+           6. UTILITIES: TOAST
+           ========================================= */
+        /* Toast */
+        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
+        .toast {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease forwards;
+            border-left: 5px solid;
+            min-width: 300px;
+        }
+        .toast.error { border-color: var(--error); }
+        .toast.success { border-color: var(--success); }
+        .toast i { font-size: 1.2rem; }
+        .toast.error i { color: var(--error); }
+        .toast.success i { color: var(--success); }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .reg-card { flex-direction: column; height: auto; }
+            .hero-section { padding: 40px; min-height: 250px; flex: unset; }
+            .form-section { padding: 30px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <div class="main-wrapper">
+        <div class="reg-card">
+            
+            <div class="hero-section">
+                <div class="hero-content">
+                    <h1>Welcome to<br>Aayushya Healthcare</h1>
+                    <p>Experience healthcare from the comfort of your home. Skip the queue, not the care.</p>
+                </div>
+                
+                <div class="hero-features">
+                    <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-shield-alt"></i> Secure Data Encryption
+                    </div>
+                    <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-clock"></i> 24/7 Appointment Booking
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-file-medical"></i> Digital Health Records
+                    </div>
+                </div>
+
+                <div class="hero-footer">
+                    &copy; 2026 Aayushya Healthcare Systems
+                </div>
+
+                <div class="hero-circles">
+                    <div style="width: 150px; height: 150px; top: -20px; right: -40px;"></div>
+                    <div style="width: 80px; height: 80px; bottom: 40px; right: 20px;"></div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                
+                <h2 style="margin-bottom: 10px; color: var(--primary);">Create Account</h2>
+                <p style="margin-bottom: 30px; opacity: 0.7;">Fill in your details to get started.</p>
+
+                <div class="progress-container">
+                    <div class="progress-line-bg"></div>
+                    <div class="progress-line-fill" id="progressFill"></div>
+                    <div class="steps-wrapper">
+                        <div class="step-item active" data-step="1">
+                            <div class="step-circle"><i class="fas fa-user"></i></div>
+                            <div class="step-label">Identity</div>
+                        </div>
+                        <div class="step-item" data-step="2">
+                            <div class="step-circle"><i class="fas fa-file-medical-alt"></i></div>
+                            <div class="step-label">Medical</div>
+                        </div>
+                        <div class="step-item" data-step="3">
+                            <div class="step-circle"><i class="fas fa-check"></i></div>
+                            <div class="step-label">Review</div>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="registerForm" method="POST" action="/api/register/patient">
+                    
+                    <div class="form-part active" id="part1">
+                        <h5 class="mb-3"><i class="fas fa-lock me-2 text-primary"></i>Login Credentials</h5>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <input type="tel" class="form-control" id="mobile" placeholder=" " required pattern="^[6-9]\d{9}$">
+                                    <label class="floating-label">Mobile Number *</label>
+                                    <small class="text-muted" style="font-size: 0.75rem; margin-left: 10px;">For OTP Verification</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <input type="email" class="form-control" id="email" placeholder=" ">
+                                    <label class="floating-label">Email (Optional)</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="password" placeholder=" " required>
+                                    <label class="floating-label">Password *</label>
+                                    <div> <!-- class="password-strength" -->
+                                        <div class="strength-bar" id="strengthBar"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="confirmPass" placeholder=" " required>
+                                    <label class="floating-label">Confirm Password *</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h5 class="mb-3 mt-2"><i class="fas fa-id-card me-2 text-primary"></i>Personal Details</h5>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="fullName" placeholder=" " required pattern="^[A-Za-z.-]{2,}(?: [A-Za-z.-]{2,})?$">
+                                    <label class="floating-label">Full Name *</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <input type="date" class="form-control" id="dob" required>
+                                    <label class="floating-label" style="background:var(--card-light); top: -8px; font-size: 0.85rem; color: var(--primary);">Date of Birth *</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <select class="form-select" id="gender" required>
+                                        <option value="" disabled selected hidden></option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <label class="floating-label">Gender *</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="btn-group" style="justify-content: flex-end;">
+                            <button type="button" class="btn btn-primary" onclick="validateAndNext(1)">
+                                Next Step <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-part" id="part2">
+                        
+                        <div class="row">
+                            <div class="col-md-12 mb-4">
+                                <h5 class="mb-3"><i class="fas fa-heartbeat me-2 text-primary"></i>Health Profile</h5>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="input-group">
+                                            <select class="form-select" id="bloodGroup" required>
+                                                <option value="" disabled selected hidden></option>
+                                                <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+                                                <option>O+</option><option>O-</option><option>AB+</option><option>AB-</option>
+                                            </select>
+                                            <label class="floating-label">Blood Group *</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="allergies" placeholder=" ">
+                                            <label class="floating-label">Allergies (e.g. Peanuts, Penicillin)</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Replaced checkboxes with direct disease input field -->
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="diseases" placeholder=" ">
+                                    <label class="floating-label">Known Diseases/Conditions (e.g. Diabetes, Hypertension)</label>
+                                </div>
+
+                                <div class="input-group">
+                                    <textarea class="form-control" id="medicalHistory" rows="3" placeholder=" "></textarea>
+                                    <label class="floating-label">Past Medical History / Surgeries</label>
+                                </div>
+
+                                <div class="input-group">
+                                    <textarea class="form-control" id="currentMedications" rows="2" placeholder=" "></textarea>
+                                    <label class="floating-label">Current Medications (if any)</label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 mb-4">
+                                <h5 class="mb-3"><i class="fas fa-phone-alt me-2 text-primary"></i>Emergency Contact</h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="emergencyName" placeholder=" " required>
+                                            <label class="floating-label">Contact Name</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <input type="tel" class="form-control" id="emergencyPhone" placeholder=" " required>
+                                            <label class="floating-label">Contact Number</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="emergencyRelationship" placeholder=" ">
+                                            <label class="floating-label">Relationship (e.g., Spouse, Parent)</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <h5 class="mb-3"><i class="fas fa-cloud-upload-alt me-2 text-primary"></i>Documents</h5>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="upload-zone" id="dropZone1">
+                                            <i class="fas fa-file-prescription"></i>
+                                            <p style="font-size: 0.9rem;">Previous Reports (PDF/Image)</p>
+                                            <input type="file" id="fileReports" hidden>
+                                            <div class="file-preview" id="preview1"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="upload-zone" id="dropZone2">
+                                            <i class="fas fa-id-badge"></i>
+                                            <p style="font-size: 0.9rem;">ID Proof (Optional)</p>
+                                            <input type="file" id="fileID" hidden>
+                                            <div class="file-preview" id="preview2"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-secondary" onclick="prevStep(1)">Back</button>
+                            <button type="button" class="btn btn-primary" onclick="validateAndNext(2)">Review <i class="fas fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="form-part" id="part3">
+                        <div class="text-center mb-4">
+                            <div style="width: 80px; height: 80px; background: rgba(0, 191, 165, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                                <i class="fas fa-clipboard-check text-primary" style="font-size: 2rem;"></i>
+                            </div>
+                            <h3>Review Details</h3>
+                            <p class="text-muted">Please ensure all information is correct.</p>
+                        </div>
+
+                        <div style="background: var(--input-bg-light); padding: 20px; border-radius: 12px; font-size: 0.95rem;">
+                            <div class="row mb-2">
+                                <div class="col-4 text-muted">Name:</div>
+                                <div class="col-8 fw-bold" id="reviewName">-</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-4 text-muted">Mobile:</div>
+                                <div class="col-8 fw-bold" id="reviewMobile">-</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-4 text-muted">Email:</div>
+                                <div class="col-8 fw-bold" id="reviewEmail">-</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-4 text-muted">Blood Group:</div>
+                                <div class="col-8 fw-bold" id="reviewBlood">-</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-4 text-muted">Diseases:</div>
+                                <div class="col-8 fw-bold" id="reviewDiseases">-</div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 mb-4">
+                            <label class="custom-check">
+                                I agree to the <a href="#" style="color: var(--primary);">Terms of Service</a> and Privacy Policy.
+                                <input type="checkbox" id="termsCheck">
+                                <span class="checkmark"></span>
+                            </label>
+                        </div>
+
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-secondary" onclick="prevStep(2)">Back</button>
+                            <button type="button" class="btn btn-success" id="submitBtn" onclick="submitForm()">
+                                <i class="fas fa-check-circle"></i> Create Account
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
+
+                <div class="mt-4" style="font-size: 0.9rem;">
+                    Already have an account? <a href="{{ url_for('auth.patient_login_page') }}" style="color: var(--primary); font-weight: 600; text-decoration: none;"> Login Here</a><br>
+                    <a href="{{ url_for('main.index') }}" style="color: var(--primary); font-weight: 600; text-decoration: none;">← Back to Home</a>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* =========================================
+        1. TOAST NOTIFICATION SYSTEM
+        ========================================= */
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+            
+            toast.innerHTML = `
+                <i class="fas ${icon}"></i>
+                <span>${message}</span>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        /* =========================================
+        2. PASSWORD STRENGTH 
+        ========================================= */
+        const passInput = document.getElementById('password');
+        const strengthBar = document.getElementById('strengthBar');
+
+        passInput.addEventListener('input', function() {
+            const val = this.value;
+            let strength = 0;
+            if (val.length > 5) strength += 25;
+            if (val.match(/[A-Z]/)) strength += 25;
+            if (val.match(/[0-9]/)) strength += 25;
+            if (val.match(/[^a-zA-Z0-9]/)) strength += 25;
+
+            strengthBar.style.width = strength + '%';
+            if(strength < 50) strengthBar.style.background = 'var(--error)';
+            else if(strength < 75) strengthBar.style.background = 'var(--warning)';
+            else strengthBar.style.background = 'var(--success)';
+        });
+
+        /* =========================================
+        3. FORM NAVIGATION & VALIDATION
+        ========================================= */
+        let currentStep = 1;
+        const totalSteps = 3;
+
+        function updateProgress(step) {
+            const progress = ((step - 1) / (totalSteps - 1)) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+
+            document.querySelectorAll('.step-item').forEach(item => {
+                const itemStep = parseInt(item.getAttribute('data-step'));
+                if (itemStep < step) {
+                    item.classList.add('completed');
+                    item.classList.remove('active');
+                } else if (itemStep === step) {
+                    item.classList.add('active');
+                    item.classList.remove('completed');
+                } else {
+                    item.classList.remove('active', 'completed');
+                }
+            });
+
+            document.querySelectorAll('.form-part').forEach(part => part.classList.remove('active'));
+            document.getElementById(`part${step}`).classList.add('active');
+            
+            // Refresh review data when step 3 is shown
+            if (step === 3) {
+                refreshReviewData();
+            }
+        }
+
+        // NEW FUNCTION: Refresh all review data
+        function refreshReviewData() {
+            // Personal Info
+            document.getElementById('reviewName').textContent = 
+                document.getElementById('fullName').value || '-';
+            document.getElementById('reviewMobile').textContent = 
+                document.getElementById('mobile').value || '-';
+            document.getElementById('reviewEmail').textContent = 
+                document.getElementById('email').value || 'Not Provided';
+            
+            // Medical Info - Blood Group
+            const bloodGroup = document.getElementById('bloodGroup').value;
+            document.getElementById('reviewBlood').textContent = 
+                bloodGroup || 'Not Provided';
+            
+            // Medical Info - Diseases
+            const diseases = document.getElementById('diseases').value;
+            document.getElementById('reviewDiseases').textContent = 
+                diseases || 'None';
+        }
+
+        function validateAndNext(step) {
+            let isValid = true;
+            const currentPart = document.getElementById(`part${step}`);
+            
+            const requiredInputs = currentPart.querySelectorAll('input[required], select[required]');
+            
+            requiredInputs.forEach(input => {
+                input.style.borderColor = '';
+            });
+
+            requiredInputs.forEach(input => {
+                if (!input.value || input.value.trim() === '') {
+                    isValid = false;
+                    input.style.borderColor = 'var(--error)';
+                    
+                    input.style.animation = 'shake 0.3s';
+                    setTimeout(() => input.style.animation = '', 300);
+                }
+            });
+
+            if (!document.querySelector('#shakeKeyframes')) {
+                const style = document.createElement('style');
+                style.id = 'shakeKeyframes';
+                style.textContent = `
+                    @keyframes shake {
+                        0%, 100% { transform: translateX(0); }
+                        25% { transform: translateX(-5px); }
+                        75% { transform: translateX(5px); }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+
+            // STEP 1 VALIDATION
+            if (step === 1) {
+                if (!isValid) {
+                    showToast('Please fill all required fields', 'error');
+                    return;
+                }
+                
+                const pass = document.getElementById('password').value;
+                const confirm = document.getElementById('confirmPass').value;
+                const mobile = document.getElementById('mobile').value;
+                const fullName = document.getElementById('fullName').value;
+                const dob = document.getElementById('dob').value;
+                const gender = document.getElementById('gender').value;
+
+                if (!/^[6-9]\d{9}$/.test(mobile)) {
+                    showToast('Please enter a valid 10-digit mobile number starting with 6-9', 'error');
+                    document.getElementById('mobile').style.borderColor = 'var(--error)';
+                    return;
+                }
+                
+                if (pass !== confirm) {
+                    showToast('Passwords do not match!', 'error');
+                    document.getElementById('password').style.borderColor = 'var(--error)';
+                    document.getElementById('confirmPass').style.borderColor = 'var(--error)';
+                    return;
+                }
+                
+                if (pass.length < 6) {
+                    showToast('Password must be at least 6 characters long', 'error');
+                    return;
+                }
+                
+                if (!/^[A-Za-z.-]{2,}(?: [A-Za-z.-]{2,})?$/.test(fullName)) {
+                    showToast('Please enter a valid full name', 'error');
+                    document.getElementById('fullName').style.borderColor = 'var(--error)';
+                    return;
+                }
+                
+                if (new Date(dob) > new Date()) {
+                    showToast('Date of birth cannot be in the future', 'error');
+                    document.getElementById('dob').style.borderColor = 'var(--error)';
+                    return;
+                }
+
+                nextStep(step + 1);
+            } 
+            
+            // STEP 2 VALIDATION
+            else if (step === 2) {
+                if (!isValid) {
+                    showToast('Please fill all required medical information fields', 'error');
+                    return;
+                }
+                
+                const emergencyName = document.getElementById('emergencyName').value;
+                if (emergencyName && !/^[A-Za-z.-]{2,}(?: [A-Za-z.-]{2,})?$/.test(emergencyName)) {
+                    showToast('Please enter a valid emergency contact name', 'error');
+                    document.getElementById('emergencyName').style.borderColor = 'var(--error)';
+                    return;
+                }
+                
+                const emergencyPhone = document.getElementById('emergencyPhone').value;
+                if (emergencyPhone && !/^[6-9]\d{9}$/.test(emergencyPhone)) {
+                    showToast('Please enter a valid emergency contact number', 'error');
+                    document.getElementById('emergencyPhone').style.borderColor = 'var(--error)';
+                    return;
+                }
+
+                // STORE ALL MEDICAL DATA FOR REVIEW
+                const bloodGroup = document.getElementById('bloodGroup').value;
+                const diseases = document.getElementById('diseases').value;
+                const allergies = document.getElementById('allergies').value;
+                const medicalHistory = document.getElementById('medicalHistory').value;
+                const currentMedications = document.getElementById('currentMedications').value;
+                
+                // Store in localStorage for backup
+                localStorage.setItem('temp_bloodGroup', bloodGroup || '');
+                localStorage.setItem('temp_diseases', diseases || '');
+                localStorage.setItem('temp_allergies', allergies || '');
+                localStorage.setItem('temp_medicalHistory', medicalHistory || '');
+                localStorage.setItem('temp_medications', currentMedications || '');
+                
+                nextStep(step + 1);
+            }
+        }
+
+        function nextStep(step) {
+            currentStep = step;
+            updateProgress(step);
+        }
+
+        function prevStep(step) {
+            currentStep = step;
+            updateProgress(step);
+        }
+
+        /* =========================================
+        4. FILE UPLOAD LOGIC
+        ========================================= */
+        function setupUpload(dropZoneId, fileInputId, previewId) {
+            const dropZone = document.getElementById(dropZoneId);
+            const fileInput = document.getElementById(fileInputId);
+            const preview = document.getElementById(previewId);
+
+            dropZone.addEventListener('click', () => fileInput.click());
+
+            fileInput.addEventListener('change', (e) => handleFile(e.target.files[0], preview, dropZone));
+
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.style.borderColor = 'var(--primary)';
+            });
+
+            dropZone.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                dropZone.style.borderColor = '#ccc';
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.style.borderColor = '#ccc';
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    handleFile(e.dataTransfer.files[0], preview, dropZone);
+                }
+            });
+        }
+
+        function handleFile(file, preview, dropZone) {
+            if (file) {
+                preview.innerHTML = `<span class="file-name">${file.name}</span>`;
+                preview.style.display = 'block';
+                dropZone.querySelector('i').style.display = 'none';
+                dropZone.querySelector('p').style.display = 'none';
+            }
+        }
+
+        setupUpload('dropZone1', 'fileReports', 'preview1');
+        setupUpload('dropZone2', 'fileID', 'preview2');
+
+        /* =========================================
+        PREVENT DEFAULT FORM SUBMISSION
+        ========================================= */
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            console.log('Form submit prevented - use submitForm() instead');
+            return false;
+        });
+
+        /* =========================================
+        5. FORM SUBMISSION
+        ========================================= */
+        function submitForm() {
+            const terms = document.getElementById('termsCheck');
+            if(!terms.checked) {
+                showToast('Please agree to the Terms of Service', 'error');
+                terms.style.outline = '2px solid var(--error)';
+                setTimeout(() => terms.style.outline = '', 3000);
+                return;
+            }
+
+            // FINAL VALIDATION BEFORE SUBMIT
+            const bloodGroup = document.getElementById('bloodGroup').value;
+            if (!bloodGroup) {
+                showToast('Blood group is required', 'error');
+                prevStep(1);
+                setTimeout(() => {
+                    nextStep(2);
+                    document.getElementById('bloodGroup').style.borderColor = 'var(--error)';
+                }, 100);
+                return;
+            }
+
+            const formData = new FormData();
+            
+            // Personal & Account Info
+            formData.append('fullName', document.getElementById('fullName').value);
+            formData.append('dob', document.getElementById('dob').value);
+            formData.append('gender', document.getElementById('gender').value);
+            formData.append('mobile', document.getElementById('mobile').value);
+            formData.append('email', document.getElementById('email').value || '');
+            formData.append('password', document.getElementById('password').value);
+            formData.append('confirmPassword', document.getElementById('confirmPass').value);
+            
+            // Medical Info
+            formData.append('bloodGroup', document.getElementById('bloodGroup').value);
+            formData.append('diseases', document.getElementById('diseases').value || '');
+            formData.append('allergies', document.getElementById('allergies').value || '');
+            formData.append('medicalHistory', document.getElementById('medicalHistory').value || '');
+            formData.append('currentMedications', document.getElementById('currentMedications').value || '');
+            
+            // Emergency Contact
+            formData.append('emergencyContactName', document.getElementById('emergencyName').value || '');
+            formData.append('emergencyContactPhone', document.getElementById('emergencyPhone').value || '');
+            formData.append('emergencyContactRelationship', document.getElementById('emergencyRelationship').value || '');
+
+            // Get the submit button
+            const btn = document.getElementById('submitBtn') || document.querySelector('.btn-success');
+            if (!btn) {
+                console.error('Submit button not found');
+                showToast('Error: Submit button not found', 'error');
+                return;
+            }
+            
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
+            btn.disabled = true;
+
+            console.log('Submitting registration form...');
+
+            fetch('/api/register/patient', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Response data:', data);
+                if (data.success) {
+                    showToast('✓ Account Created Successfully! Your Patient ID is: ' + data.patient_id, 'success');
+                    localStorage.setItem('temp_patient_id', data.patient_id);
+                    
+                    setTimeout(() => {
+                        window.location.href = data.redirect || '/patient/dashboard';
+                    }, 2000);
+                } else {
+                    showToast(data.message || 'Registration failed. Please try again.', 'error');
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Registration error:', error);
+                showToast('Error: Unable to connect to server. Please make sure the application is running.', 'error');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            });
+        }
+    </script>
+</body>
+</html>

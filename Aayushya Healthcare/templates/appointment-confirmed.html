@@ -1,0 +1,555 @@
+{% extends "base.html" %}
+
+{% block title %}Appointment Confirmed - Aayushya Healthcare{% endblock %}
+
+{% block extra_css %}
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .success-container {
+            padding: 40px 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .success-wrapper {
+            max-width: 700px;
+            width: 100%;
+        }
+
+        .success-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .success-header {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            color: white;
+            padding: 50px 30px;
+            text-align: center;
+        }
+
+        .success-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            animation: bounceIn 0.6s ease 0.2s both;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .success-header h1 {
+            margin: 0;
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .success-header p {
+            margin: 10px 0 0 0;
+            opacity: 0.95;
+            font-size: 15px;
+        }
+
+        .success-content {
+            padding: 40px;
+        }
+
+        /* Appointment Reference */
+        .appointment-ref-section {
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f1ff 100%);
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .ref-label {
+            font-size: 12px;
+            color: #666;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .ref-number {
+            font-size: 28px;
+            font-weight: 700;
+            color: #667eea;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 2px;
+        }
+
+        /* Queue Information */
+        .queue-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .queue-title {
+            font-size: 14px;
+            font-weight: 600;
+            opacity: 0.9;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .queue-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .queue-item {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .queue-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .queue-label {
+            font-size: 12px;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        /* Appointment Details */
+        .details-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: #667eea;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .detail-item {
+            background: #f8f9ff;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: #999;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-value {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* Doctor Information */
+        .doctor-info-section {
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f1ff 100%);
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .doctor-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
+            flex-shrink: 0;
+        }
+
+        .doctor-details {
+            flex: 1;
+        }
+
+        .doctor-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .doctor-specialty {
+            font-size: 13px;
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .doctor-exp {
+            font-size: 12px;
+            color: #999;
+        }
+
+        /* Important Note */
+        .important-note {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .important-note i {
+            color: #ffc107;
+            font-size: 18px;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .important-note-content {
+            flex: 1;
+        }
+
+        .important-note-title {
+            font-weight: 700;
+            color: #856404;
+            margin-bottom: 5px;
+        }
+
+        .important-note-text {
+            font-size: 13px;
+            color: #856404;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 30px;
+            border-top: 1px solid #f0f0f0;
+            padding-top: 30px;
+        }
+
+        .btn {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #f8f9ff;
+        }
+
+        /* Help Section */
+        .help-section {
+            background: #f8f9ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+            border-left: 4px solid #667eea;
+        }
+
+        .help-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .help-content {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .success-content {
+                padding: 25px;
+            }
+
+            .success-header h1 {
+                font-size: 24px;
+            }
+
+            .queue-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .doctor-info-section {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .appointment-ref-section {
+                padding: 20px;
+            }
+
+            .ref-number {
+                font-size: 22px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light shadow-sm sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">
+                <i class="fas fa-hospital-alt me-2 gradient-text"></i>
+                <span class="gradient-text fw-bold">Aayushya Healthcare</span>
+            </a>
+
+            <div class="ms-auto d-flex align-items-center gap-3">
+                <!-- <label class="d-flex align-items-center gap-2">
+                    <span class="d-none d-md-inline">Dark Mode</span>
+                    <div class="dark-mode-switch">
+                        <input type="checkbox" id="darkModeToggle">
+                        <span class="dark-mode-slider"></span>
+                    </div>
+                </label> -->
+
+                {% if session.user_id %}
+                    <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-danger btn-sm">
+                        Logout
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="success-container">
+        <div class="success-wrapper">
+            <div class="success-card">
+                <!-- Header -->
+                <div class="success-header">
+                    <div class="success-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h1>Appointment Confirmed!</h1>
+                    <p>Your appointment has been successfully booked</p>
+                </div>
+
+                <!-- Content -->
+                <div class="success-content">
+                    <!-- Appointment Reference -->
+                    <div class="appointment-ref-section">
+                        <div class="ref-label">Your Appointment Reference</div>
+                        <div class="ref-number">{{ appointment_id }}</div>
+                    </div>
+
+                    <!-- Queue Information -->
+                    <div class="queue-section">
+                        <div class="queue-title">
+                            <i class="fas fa-list-ol"></i>
+                            Your Queue Position
+                        </div>
+                        <div class="queue-grid">
+                            <div class="queue-item">
+                                <div class="queue-value">#{{ queue_number }}</div>
+                                <div class="queue-label">In Queue</div>
+                            </div>
+                            <div class="queue-item">
+                                <div class="queue-value">{{ patients_ahead }}</div>
+                                <div class="queue-label">Before You</div>
+                            </div>
+                            <div class="queue-item">
+                                <div class="queue-value">~{{ estimated_time_formatted }}</div>
+                                <div class="queue-label">Wait Time</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Important Note -->
+                    <div class="important-note">
+                        <i class="fas fa-info-circle"></i>
+                        <div class="important-note-content">
+                            <div class="important-note-title">Important!</div>
+                            <div class="important-note-text">Please arrive 15 minutes before your appointment time. Bring your ID and any relevant medical documents.</div>
+                        </div>
+                    </div>
+
+                    <!-- Doctor Information -->
+                    <div class="doctor-info-section">
+                        <div class="doctor-avatar">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                        <div class="doctor-details">
+                            <div class="doctor-name">Dr. {{ doctor_name }}</div>
+                            <div class="doctor-specialty">{{ doctor_specialization }}</div>
+                            <div class="doctor-exp"><i class="fas fa-stethoscope"></i> Specialist Doctor</div>
+                        </div>
+                    </div>
+
+                    <!-- Appointment Details -->
+                    <div class="details-section">
+                        <div class="section-title">
+                            <i class="fas fa-calendar-alt"></i>
+                            Appointment Details
+                        </div>
+                        <div class="details-grid">
+                            <div class="detail-item">
+                                <div class="detail-label">Date</div>
+                                <div class="detail-value">{{ appointment_date }}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Time</div>
+                                <div class="detail-value">{{ appointment_time }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hospital Details -->
+                    <div class="details-section">
+                        <div class="section-title">
+                            <i class="fas fa-hospital-alt"></i>
+                            Hospital Information
+                        </div>
+                        <div class="details-grid" style="grid-template-columns: 1fr;">
+                            <div class="detail-item">
+                                <div class="detail-label">Hospital Name</div>
+                                <div class="detail-value">{{ hospital_name }}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Address</div>
+                                <div class="detail-value">{{ hospital_address }}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Contact</div>
+                                <div class="detail-value">{{ hospital_phone }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Help Section -->
+                    <div class="help-section">
+                        <div class="help-title">
+                            <i class="fas fa-headset"></i>
+                            Need Help?
+                        </div>
+                        <div class="help-content">
+                            If you need to reschedule or cancel, please contact us at least 24 hours before your appointment. For emergencies, call the hospital directly.
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <a href="{{ url_for('patient.dashboard') }}" class="btn btn-primary">
+                            <i class="fas fa-home"></i> Go to Dashboard
+                        </a>
+                        <a href="{{ url_for('patient.profile') }}" class="btn btn-secondary">
+                            <i class="fas fa-user"></i> My Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

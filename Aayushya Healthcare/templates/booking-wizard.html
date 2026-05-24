@@ -1,0 +1,1284 @@
+{% extends "base.html" %}
+
+{% block title %}Book Appointment - Aayushya Healthcare{% endblock %}
+
+{% block extra_css %}
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg-color);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .wizard-container {
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .wizard-wrapper {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .wizard-card {
+            background: var(--card-color);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px var(--shadow-color);
+            overflow: hidden;
+        }
+
+        .wizard-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .wizard-header h1 {
+            margin: 0 0 10px 0;
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .wizard-header p {
+            margin: 0;
+            opacity: 0.95;
+            font-size: 15px;
+        }
+
+        /* Progress Bar */
+        .progress-bar-container {
+            background: var(--card-color);
+            padding: 20px 30px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: var(--border-color);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 25%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .progress-text {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 13px;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .wizard-content {
+            padding: 40px;
+        }
+
+        .step {
+            display: none;
+        }
+
+        .step.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .step-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .step-title i {
+            color: var(--primary-color);
+            font-size: 28px;
+        }
+
+        .step-description {
+            color: var(--muted-color);
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        /* Hospital Selection Step */
+        .hospital-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .hospital-option, .doctor-option {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--card-color);
+        }
+
+        .hospital-option:hover, .doctor-option:hover {
+            border-color: var(--primary-color);
+            background: var(--card-color);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+        }
+
+        .hospital-option input[type="radio"], .doctor-option input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--primary-color);
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+
+        .hospital-name, .doctor-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
+
+        .hospital-address {
+            font-size: 13px;
+            color: var(--muted-color);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .doctor-specialty {
+            font-size: 13px;
+            color: var(--primary-color);
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .doctor-details {
+            font-size: 12px;
+            color: var(--muted-color);
+        }
+
+        .hospital-stats {
+            display: flex;
+            gap: 20px;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .hospital-stat {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .hospital-stat-value {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        /* Doctor Selection Step */
+        .doctor-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .doctor-option {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .doctor-option:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+        }
+
+        .doctor-option input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #667eea;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+
+        .doctor-info {
+            flex: 1;
+        }
+
+        .doctor-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .doctor-specialty {
+            font-size: 13px;
+            color: #667eea;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .doctor-details {
+            font-size: 12px;
+            color: #999;
+        }
+
+        /* Date/Time Step */
+        .datetime-form {
+            display: grid;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
+
+        .form-label .required {
+            color: var(--error-color);
+            margin-left: 4px;
+        }
+
+        .form-control,
+        .form-select {
+            padding: 12px 14px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: var(--input-bg);
+            color: var(--text-color);
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: var(--input-bg);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        /* Details Step */
+        .details-form {
+            display: grid;
+            gap: 20px;
+        }
+
+        textarea {
+            padding: 12px 14px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 100px;
+            transition: all 0.3s ease;
+            background: var(--input-bg);
+            color: var(--text-color);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: var(--input-bg);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        /* Alert Messages */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            display: none;
+            border-left: 4px solid;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-error {
+            background-color: #fee;
+            color: #c33;
+            border-left-color: #c33;
+        }
+
+        .alert-success {
+            background-color: #efe;
+            color: #3c3;
+            border-left-color: #3c3;
+        }
+
+        /* Buttons */
+        .wizard-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 40px;
+            border-top: 1px solid #f0f0f0;
+            padding-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            flex: 0 0 auto;
+            min-width: 130px;
+        }
+
+        .btn-secondary:hover {
+            background: #f8f9ff;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Emergency Level */
+        .emergency-level-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .level-card {
+            position: relative;
+        }
+
+        .level-card input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .level-card label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            background: white;
+        }
+
+        .level-card input[type="radio"]:checked + label {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .level-card i {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .level-card .level-text {
+            font-weight: 600;
+            color: #333;
+            font-size: 13px;
+        }
+
+        .level-card.level-normal i {
+            color: #27ae60;
+        }
+
+        .level-card.level-urgent i {
+            color: #f39c12;
+        }
+
+        .level-card.level-emergency i {
+            color: #e74c3c;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .wizard-header h1 {
+                font-size: 24px;
+            }
+
+            .wizard-content {
+                padding: 25px;
+            }
+
+            .wizard-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .btn-secondary {
+                flex: 1;
+                min-width: auto;
+            }
+
+            .emergency-level-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light shadow-sm sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">
+                <i class="fas fa-hospital-alt me-2 gradient-text"></i>
+                <span class="gradient-text fw-bold">Aayushya Healthcare</span>
+            </a>
+
+            <div class="ms-auto d-flex align-items-center gap-3">
+                <!-- <label class="d-flex align-items-center gap-2">
+                    <span class="d-none d-md-inline">Dark Mode</span>
+                    <div class="dark-mode-switch">
+                        <input type="checkbox" id="darkModeToggle">
+                        <span class="dark-mode-slider"></span>
+                    </div>
+                </label> -->
+
+                {% if session.user_id %}
+                    <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-danger btn-sm">
+                        Logout
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="wizard-container">
+        <div class="wizard-wrapper">
+            <div class="wizard-card">
+                <div class="wizard-header">
+                    <h1>Book Your Appointment</h1>
+                    <p>Quick and Easy Appointment Booking Process</p>
+                </div>
+
+                <div class="progress-bar-container">
+                    <div class="progress-bar">
+                        <div class="progress-bar-fill" id="progressBarFill"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span id="currentStep">Step 1</span> of 4
+                    </div>
+                </div>
+
+                <div class="wizard-content">
+                    <!-- Error Alert -->
+                    <div id="errorAlert" class="alert alert-error">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span id="errorText"></span>
+                    </div>
+
+                    <!-- Success Alert -->
+                    <div id="successAlert" class="alert alert-success">
+                        <i class="fas fa-check-circle"></i>
+                        <span id="successText"></span>
+                    </div>
+
+                    <!-- STEP 1: Hospital Selection -->
+                    <div id="step1" class="step active">
+                        <div class="step-title">
+                            <i class="fas fa-hospital-alt"></i>
+                            Select a Hospital
+                        </div>
+                        <div class="step-description">Choose your preferred hospital for the appointment</div>
+
+                        <div class="hospital-list" id="hospitalList">
+                            <div style="text-align: center; padding: 40px 20px; color: #999;">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i>
+                                <p>Loading hospitals...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2: Doctor Selection (with Specialization Filter) -->
+                    <div id="step2" class="step">
+                        <div class="step-title">
+                            <i class="fas fa-user-md"></i>
+                            Select Specialization & Doctor
+                        </div>
+                        <div class="step-description">First choose the type of doctor you need, then select your preferred doctor</div>
+
+                        <!-- Specialization Filter -->
+                        <div class="form-group" style="margin-bottom: 25px;">
+                            <label class="form-label">
+                                Specialization
+                                <span class="required">*</span>
+                            </label>
+                            <select id="specializationFilter" class="form-select">
+                                <option value="">-- All Specializations --</option>
+                            </select>
+                        </div>
+
+                        <div class="doctor-list" id="doctorList">
+                            <div style="text-align: center; padding: 40px 20px; color: #999;">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i>
+                                <p>Loading doctors...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3: Date & Time with Queue Display -->
+                    <div id="step3" class="step">
+                        <div class="step-title">
+                            <i class="fas fa-calendar-alt"></i>
+                            Choose Date & Time
+                        </div>
+                        <div class="step-description">Select your preferred appointment date and time</div>
+
+                        <div class="datetime-form">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    Appointment Date
+                                    <span class="required">*</span>
+                                </label>
+                                <input type="date" id="appointmentDate" class="form-control" required onchange="loadQueueInfo()">
+                            </div>
+
+                            <!-- Queue Info Display -->
+                            <div id="queueInfoContainer" style="display: none; margin: 20px 0; padding: 20px; background: #f8f9ff; border-radius: 12px; border-left: 4px solid #667eea;">
+                                <div style="margin-bottom: 15px;">
+                                    <h4 style="margin: 0 0 15px 0; color: #333; font-size: 16px;">
+                                        <i class="fas fa-clock"></i> Available Time Slots
+                                    </h4>
+                                    <p style="margin: 0 0 15px 0; color: #666; font-size: 13px;">
+                                        Queue information for <strong><span id="selectedDoctorName">doctor</span></strong> on <strong><span id="selectedDateDisplay">this date</span></strong>
+                                    </p>
+                                </div>
+
+                                <div id="slotsList" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;">
+                                    <div style="text-align: center; padding: 20px; color: #999;">
+                                        <i class="fas fa-spinner fa-spin"></i> Loading slots...
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group" style="margin-top: 20px;">
+                                <label class="form-label">
+                                    Appointment Time
+                                    <span class="required">*</span>
+                                </label>
+                                <select id="appointmentTime" class="form-select" required>
+                                    <option value="">Select time slot...</option>
+                                    <option value="09:00">09:00 AM</option>
+                                    <option value="10:00">10:00 AM</option>
+                                    <option value="11:00">11:00 AM</option>
+                                    <option value="12:00">12:00 PM</option>
+                                    <option value="14:00">02:00 PM</option>
+                                    <option value="15:00">03:00 PM</option>
+                                    <option value="16:00">04:00 PM</option>
+                                    <option value="17:00">05:00 PM</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 4: Details -->
+                    <div id="step4" class="step">
+                        <div class="step-title">
+                            <i class="fas fa-file-medical"></i>
+                            Medical Details
+                        </div>
+                        <div class="step-description">Provide your medical information for the doctor</div>
+
+                        <div class="details-form">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    Main Symptoms or Reason for Visit
+                                    <span class="required">*</span>
+                                </label>
+                                <textarea id="symptomsDescription" placeholder="E.g., Fever, chest pain, difficulty breathing, etc..." required></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Duration of Symptoms</label>
+                                <select id="symptomDuration" class="form-select">
+                                    <option value="">Select duration...</option>
+                                    <option value="less_than_24">Less than 24 hours</option>
+                                    <option value="1_3_days">1-3 days</option>
+                                    <option value="4_7_days">4-7 days</option>
+                                    <option value="1_2_weeks">1-2 weeks</option>
+                                    <option value="more_than_2_weeks">More than 2 weeks</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Current Medications (if any)</label>
+                                <textarea id="medications" placeholder="List any medicines you're currently taking..." style="min-height: 80px;"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Medical History / Chronic Conditions</label>
+                                <textarea id="medicalHistory" placeholder="E.g., Diabetes, Hypertension, Asthma, etc..." style="min-height: 80px;"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Allergies (if any)</label>
+                                <textarea id="allergies" placeholder="List any known allergies (medicine, food, etc)..." style="min-height: 80px;"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Priority Level</label>
+                                <div class="emergency-level-group">
+                                    <div class="level-card level-normal">
+                                        <input type="radio" id="levelNormal" name="emergencyLevel" value="normal" checked>
+                                        <label for="levelNormal">
+                                            <i class="fas fa-smile"></i>
+                                            <span class="level-text">Normal</span>
+                                        </label>
+                                    </div>
+
+                                    <div class="level-card level-urgent">
+                                        <input type="radio" id="levelUrgent" name="emergencyLevel" value="urgent">
+                                        <label for="levelUrgent">
+                                            <i class="fas fa-exclamation"></i>
+                                            <span class="level-text">Urgent</span>
+                                        </label>
+                                    </div>
+
+                                    <div class="level-card level-emergency">
+                                        <input type="radio" id="levelEmergency" name="emergencyLevel" value="emergency">
+                                        <label for="levelEmergency">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                            <span class="level-text">Emergency</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Additional Notes for Doctor</label>
+                                <textarea id="notes" placeholder="Any other information you'd like the doctor to know..." style="min-height: 80px;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Buttons -->
+                    <div class="wizard-actions">
+                        <button type="button" class="btn btn-secondary" id="prevBtn" onclick="previousStep()">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </button>
+                        <button type="button" class="btn btn-primary" id="nextBtn" onclick="nextStep()">
+                            <span id="nextBtnText">Continue</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 4;
+        let selectedHospitalId = null;
+        let selectedDoctorId = null;
+        let allDoctors = [];  // Store all doctors for filtering
+        let selectedSpecialization = '';  // Track current specialization filter
+
+        // Show error
+        function showError(message) {
+            const errorAlert = document.getElementById('errorAlert');
+            document.getElementById('errorText').textContent = message;
+            errorAlert.style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Show success
+        function showSuccess(message) {
+            const successAlert = document.getElementById('successAlert');
+            document.getElementById('successText').textContent = message;
+            successAlert.style.display = 'block';
+        }
+
+        // Hide alerts
+        function hideAlerts() {
+            document.getElementById('errorAlert').style.display = 'none';
+            document.getElementById('successAlert').style.display = 'none';
+        }
+
+        // Load specializations
+        async function loadSpecializations() {
+            try {
+                const response = await fetch('/patient/api/specializations');
+                const data = await response.json();
+                
+                const select = document.getElementById('specializationFilter');
+                const options = select.innerHTML;
+                
+                if (data.success && data.specializations) {
+                    data.specializations.forEach(spec => {
+                        const option = document.createElement('option');
+                        option.value = spec;
+                        option.textContent = spec;
+                        select.appendChild(option);
+                    });
+                    
+                    // Add change listener
+                    select.addEventListener('change', (e) => {
+                        selectedSpecialization = e.target.value;
+                        filterAndLoadDoctors();
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading specializations:', error);
+            }
+        }
+
+        // Filter and load doctors
+        function filterAndLoadDoctors() {
+            if (selectedSpecialization) {
+                // Filter doctors by specialization
+                const filtered = allDoctors.filter(d => d.specialization === selectedSpecialization);
+                displayDoctors(filtered);
+            } else {
+                // Show all doctors for selected hospital
+                displayDoctors(allDoctors);
+            }
+        }
+
+        // Display doctors with individual queue information
+        function displayDoctors(doctors) {
+            const container = document.getElementById('doctorList');
+            container.innerHTML = '';
+            
+            if (!doctors || doctors.length === 0) {
+                container.innerHTML = '<p style="color: #999; text-align: center; padding: 40px 20px;">No doctors available for your selection</p>';
+                return;
+            }
+
+            doctors.forEach((doctor, index) => {
+                const div = document.createElement('div');
+                div.className = 'doctor-option';
+                
+                const waitColor = doctor.estimated_wait_minutes === 0 ? '#27ae60' : 
+                                 doctor.estimated_wait_minutes > 30 ? '#e74c3c' : '#f39c12';
+                
+                div.innerHTML = `
+                    <input type="radio" id="doctor_${doctor.id}" name="doctorId" value="${doctor.id}" ${index === 0 ? 'checked' : ''}>
+                    <div class="doctor-info">
+                        <div class="doctor-name">Dr. ${doctor.full_name}</div>
+                        <div class="doctor-specialty">${doctor.specialization}</div>
+                        <div class="doctor-details">
+                            <i class="fas fa-graduation-cap"></i> ${doctor.qualification || 'MBBS'} • 
+                            <i class="fas fa-briefcase"></i> ${doctor.experience_years || 5} years
+                        </div>
+                        <div class="doctor-queue-info" style="margin-top: 10px; padding: 8px 12px; background: rgba(102, 126, 234, 0.1); border-radius: 6px; font-size: 12px;">
+                            <i class="fas fa-users" style="color: ${waitColor};"></i>
+                            <span style="color: #666;">Current Queue: </span>
+                            <strong style="color: ${waitColor};">${doctor.current_queue} patients</strong>
+                            <span style="margin-left: 10px; color: #666;">Wait Time: </span>
+                            <strong style="color: ${waitColor};">${doctor.wait_time_text}</strong>
+                        </div>
+                    </div>
+                `;
+                
+                // Add click event to the entire card
+                div.addEventListener('click', () => {
+                    const radio = div.querySelector('input[type="radio"]');
+                    radio.checked = true;
+                    selectedDoctorId = radio.value;
+                });
+                
+                container.appendChild(div);
+            });
+
+            // Update selected doctor
+            selectedDoctorId = doctors[0].id;
+        }
+
+        // Load hospitals
+        async function loadHospitals() {
+            try {
+                const response = await fetch('/patient/api/hospitals');
+                const data = await response.json();
+
+                const container = document.getElementById('hospitalList');
+                container.innerHTML = '';
+
+                if (!data.success || !data.hospitals || data.hospitals.length === 0) {
+                    container.innerHTML = '<p style="color: #999; text-align: center;">No hospitals available</p>';
+                    return;
+                }
+
+                data.hospitals.forEach((hospital, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'hospital-option';
+                    
+                    // Calculate waiting time: queue_number × 5 minutes per patient
+                    const queueCount = hospital.current_queue_count || 0;
+                    const waitingTime = queueCount * 5;
+                    const waitingTimeText = waitingTime === 0 ? 'No wait' : `~${waitingTime} min`;
+                    
+                    card.innerHTML = `
+                        <input type="radio" id="hospital_${hospital.id}" name="hospitalId" value="${hospital.id}" ${index === 0 ? 'checked' : ''}>
+                        <div class="hospital-info">
+                            <div class="hospital-name">${hospital.name}</div>
+                            <div class="hospital-address">
+                                <i class="fas fa-map-marker-alt" style="color: #667eea;"></i>
+                                ${hospital.address}
+                            </div>
+                            <div class="hospital-stats">
+                                <div class="hospital-stat">
+                                    <i class="fas fa-users" style="color: #667eea;"></i>
+                                    <span>In Queue: <span class="hospital-stat-value">${queueCount}</span></span>
+                                </div>
+                                <div class="hospital-stat">
+                                    <i class="fas fa-hourglass-end" style="color: ${waitingTime === 0 ? '#27ae60' : waitingTime > 30 ? '#e74c3c' : '#f39c12'};"></i>
+                                    <span>Wait Time: <span class="hospital-stat-value" style="color: ${waitingTime === 0 ? '#27ae60' : waitingTime > 30 ? '#e74c3c' : '#f39c12'};">${waitingTimeText}</span></span>
+                                </div>
+                                <div class="hospital-stat">
+                                    <i class="fas fa-star" style="color: #ffc107;"></i>
+                                    <span>Rating: <span class="hospital-stat-value">${hospital.rating ? hospital.rating.toFixed(1) : 'N/A'}/5</span></span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Add click event to the entire card
+                    card.addEventListener('click', () => {
+                        const radio = card.querySelector('input[type="radio"]');
+                        radio.checked = true;
+                        selectedHospitalId = radio.value;
+                        onHospitalChange();
+                    });
+                    
+                    // Also add change event to radio button
+                    const radio = card.querySelector('input[type="radio"]');
+                    radio.addEventListener('change', onHospitalChange);
+                    
+                    container.appendChild(card);
+                });
+
+                // Select first hospital by default and load its doctors
+                selectedHospitalId = data.hospitals[0].id;
+                loadDoctorsForHospital();
+                
+            } catch (error) {
+                console.error('Error loading hospitals:', error);
+                showError('Failed to load hospitals. Please refresh the page.');
+            }
+        }
+
+        // Hospital change handler
+        function onHospitalChange() {
+            const selected = document.querySelector('input[name="hospitalId"]:checked');
+            if (selected) {
+                selectedHospitalId = selected.value;
+                selectedSpecialization = '';  // Reset specialization filter
+                document.getElementById('specializationFilter').value = '';
+                loadDoctorsForHospital();
+            }
+        }
+
+        // Load doctors for selected hospital
+        async function loadDoctorsForHospital() {
+            try {
+                const response = await fetch(`/patient/api/doctors-by-hospital/${selectedHospitalId}`);
+                const data = await response.json();
+
+                if (data.success && data.doctors) {
+                    allDoctors = data.doctors;
+                    
+                    // Update specialization dropdown with available specializations for this hospital
+                    const specializationSelect = document.getElementById('specializationFilter');
+                    specializationSelect.innerHTML = '<option value="">-- All Specializations --</option>';
+                    
+                    if (data.specializations && data.specializations.length > 0) {
+                        data.specializations.forEach(spec => {
+                            const option = document.createElement('option');
+                            option.value = spec;
+                            option.textContent = spec;
+                            specializationSelect.appendChild(option);
+                        });
+                    }
+                    
+                    displayDoctors(data.doctors);
+                } else {
+                    // No doctors found for this hospital
+                    const container = document.getElementById('doctorList');
+                    container.innerHTML = '<p style="color: #999; text-align: center; padding: 40px 20px;">No doctors available at this hospital</p>';
+                    
+                    // Clear specialization dropdown
+                    const specializationSelect = document.getElementById('specializationFilter');
+                    specializationSelect.innerHTML = '<option value="">-- No specializations available --</option>';
+                }
+            } catch (error) {
+                console.error('Error loading doctors:', error);
+                showError('Failed to load doctors. Please try again.');
+            }
+        }
+
+        // Load queue info for date/time
+        async function loadQueueInfo() {
+            const appointmentDate = document.getElementById('appointmentDate').value;
+            
+            if (!appointmentDate || !selectedDoctorId) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/patient/api/queue-info', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        doctor_id: selectedDoctorId,
+                        hospital_id: selectedHospitalId,
+                        appointment_date: appointmentDate
+                    })
+                });
+                
+                const data = await response.json();
+
+                if (data.success && data.slots) {
+                    // Find selected doctor name
+                    const doctor = allDoctors.find(d => d.id === parseInt(selectedDoctorId));
+                    const doctorName = doctor ? `Dr. ${doctor.full_name}` : 'Selected Doctor';
+                    
+                    // Format date for display
+                    const dateObj = new Date(appointmentDate + 'T00:00:00');
+                    const dateDisplay = dateObj.toLocaleDateString('en-US', { 
+                        weekday: 'long', 
+                        year: 'numeric', 
+                        month: 'short', 
+                        day: 'numeric' 
+                    });
+
+                    document.getElementById('selectedDoctorName').textContent = doctorName;
+                    document.getElementById('selectedDateDisplay').textContent = dateDisplay;
+
+                    const slotsList = document.getElementById('slotsList');
+                    slotsList.innerHTML = '';
+
+                    data.slots.forEach(slot => {
+                        const slotCard = document.createElement('div');
+                        slotCard.style.cssText = `
+                            padding: 15px;
+                            background: white;
+                            border: 2px solid #e0e0e0;
+                            border-radius: 10px;
+                            cursor: pointer;
+                            transition: all 0.2s ease;
+                            text-align: center;
+                        `;
+
+                        const waitColor = slot.queue_count === 0 ? '#27ae60' : 
+                                         slot.queue_count > 3 ? '#e74c3c' : '#f39c12';
+                        
+                        slotCard.innerHTML = `
+                            <div style="font-size: 18px; font-weight: 700; color: #333; margin-bottom: 8px;">
+                                ${slot.time}
+                            </div>
+                            <div style="font-size: 12px; color: #666; margin-bottom: 8px;">
+                                <i class="fas fa-users" style="color: ${waitColor};"></i>
+                                Queue: <strong>${slot.queue_count}</strong> patient${slot.queue_count !== 1 ? 's' : ''}
+                            </div>
+                            <div style="font-size: 12px; color: ${waitColor}; font-weight: 600;">
+                                <i class="fas fa-hourglass-end"></i>
+                                ${slot.wait_time_str}
+                            </div>
+                        `;
+
+                        slotCard.addEventListener('mouseover', () => {
+                            slotCard.style.borderColor = '#667eea';
+                            slotCard.style.background = '#f8f9ff';
+                            slotCard.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.15)';
+                        });
+
+                        slotCard.addEventListener('mouseout', () => {
+                            slotCard.style.borderColor = '#e0e0e0';
+                            slotCard.style.background = 'white';
+                            slotCard.style.boxShadow = 'none';
+                        });
+
+                        slotCard.addEventListener('click', () => {
+                            // Set time in select dropdown
+                            document.getElementById('appointmentTime').value = slot.time;
+                        });
+
+                        slotsList.appendChild(slotCard);
+                    });
+
+                    document.getElementById('queueInfoContainer').style.display = 'block';
+                } else {
+                    document.getElementById('queueInfoContainer').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error loading queue info:', error);
+                document.getElementById('queueInfoContainer').style.display = 'none';
+            }
+        }
+
+        // Update progress bar
+        function updateProgress() {
+            const percentage = (currentStep / totalSteps) * 100;
+            document.getElementById('progressBarFill').style.width = percentage + '%';
+            document.getElementById('currentStep').textContent = `Step ${currentStep}`;
+        }
+
+        // Show step
+        function showStep(step) {
+            document.querySelectorAll('.step').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.getElementById(`step${step}`).classList.add('active');
+
+            // Update button text
+            const nextBtn = document.getElementById('nextBtn');
+            const nextBtnText = document.getElementById('nextBtnText');
+
+            if (step === totalSteps) {
+                nextBtnText.innerHTML = '<i class="fas fa-check"></i> Complete Booking';
+            } else {
+                nextBtnText.innerHTML = 'Continue <i class="fas fa-arrow-right"></i>';
+            }
+
+            // Show/hide prev button
+            document.getElementById('prevBtn').style.display = step === 1 ? 'none' : 'flex';
+
+            updateProgress();
+            hideAlerts();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Validate step
+        function validateStep(step) {
+            if (step === 1) {
+                const selected = document.querySelector('input[name="hospitalId"]:checked');
+                if (!selected) {
+                    showError('Please select a hospital');
+                    return false;
+                }
+                selectedHospitalId = selected.value;
+            } else if (step === 2) {
+                const selected = document.querySelector('input[name="doctorId"]:checked');
+                if (!selected) {
+                    showError('Please select a doctor');
+                    return false;
+                }
+                selectedDoctorId = selected.value;
+            } else if (step === 3) {
+                const date = document.getElementById('appointmentDate').value;
+                const time = document.getElementById('appointmentTime').value;
+                if (!date) {
+                    showError('Please select an appointment date');
+                    return false;
+                }
+                if (!time) {
+                    showError('Please select an appointment time');
+                    return false;
+                }
+            } else if (step === 4) {
+                const symptoms = document.getElementById('symptomsDescription').value.trim();
+                if (!symptoms) {
+                    showError('Please describe your symptoms or reason for visit');
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // Next step
+        function nextStep() {
+            if (!validateStep(currentStep)) {
+                return;
+            }
+
+            if (currentStep === totalSteps) {
+                submitBooking();
+                return;
+            }
+
+            currentStep++;
+            showStep(currentStep);
+        }
+
+        // Previous step
+        function previousStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                showStep(currentStep);
+            }
+        }
+
+        // Submit booking
+        async function submitBooking() {
+            const submitBtn = document.getElementById('nextBtn');
+            submitBtn.disabled = true;
+
+            const hospitalInput = document.querySelector('input[name="hospitalId"]:checked');
+            const doctorInput = document.querySelector('input[name="doctorId"]:checked');
+
+            // Debug logging
+            console.log('Form Debug Info:');
+            console.log('Hospital Input:', hospitalInput);
+            console.log('Selected Hospital ID:', selectedHospitalId);
+            console.log('Doctor Input:', doctorInput);
+            console.log('Selected Doctor ID:', selectedDoctorId);
+
+            if (!hospitalInput) {
+                showError('Please select a hospital');
+                submitBtn.disabled = false;
+                return;
+            }
+
+            if (!doctorInput) {
+                showError('Please select a doctor');
+                submitBtn.disabled = false;
+                return;
+            }
+
+            const formData = {
+                hospital_id: parseInt(hospitalInput.value),  // Convert to integer
+                doctor_id: parseInt(doctorInput.value),      // Convert to integer
+                appointment_date: document.getElementById('appointmentDate').value,
+                appointment_time: document.getElementById('appointmentTime').value,
+                symptoms_description: document.getElementById('symptomsDescription').value,
+                symptom_duration: document.getElementById('symptomDuration').value || '',
+                current_medications: document.getElementById('medications').value || '',
+                medical_history: document.getElementById('medicalHistory').value || '',
+                allergies: document.getElementById('allergies').value || '',
+                emergency_level: document.querySelector('input[name="emergencyLevel"]:checked').value,
+                notes: document.getElementById('notes').value
+            };
+
+            console.log('Form Data Being Sent:', formData);
+
+            try {
+                const response = await fetch('/patient/api/book-appointment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                console.log('API Response:', data);
+
+                if (data.success) {
+                    showSuccess('Appointment booked successfully! Redirecting to confirmation...');
+                    setTimeout(() => {
+                        window.location.href = data.redirect_url;
+                    }, 1500);
+                } else {
+                    showError(data.message || 'Failed to book appointment');
+                    submitBtn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Booking error:', error);
+                showError('Error booking appointment. Please try again.');
+                submitBtn.disabled = false;
+            }
+        }
+
+        // Set min date to today
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('appointmentDate').min = today;
+
+        // Initialize
+        window.addEventListener('load', async () => {
+            await loadHospitals();
+            loadSpecializations();
+            showStep(1);
+        });
+    </script>
+{% endblock %}

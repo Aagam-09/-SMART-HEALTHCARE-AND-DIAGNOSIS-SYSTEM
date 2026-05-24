@@ -1,0 +1,11 @@
+# Ignore virtual environment and compiled Python files
+env/
+__pycache__/
+*.py[cod]
+*.pyc
+
+# Ignore removed backup folder
+removed/
+
+# Ignore archives
+*.zip

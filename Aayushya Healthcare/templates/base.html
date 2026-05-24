@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Aayushya Healthcare{% endblock %}</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    {% block extra_css %}{% endblock %}
+
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --text-color: #2c3e50;
+            --card-color: #ffffff;
+            --border-color: #e0e0e0;
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --error-color: #e74c3c;
+            --muted-color: #6c757d;
+            --navbar-bg: #ffffff;
+            --input-bg: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.08);
+            --light-bg: #ffffff;
+            --hover-bg: rgba(102, 126, 234, 0.05);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #0f172a;
+            --text-color: #e2e8f0;
+            --card-color: #1e293b;
+            --border-color: #334155;
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --muted-color: #94a3b8;
+            --navbar-bg: #1e293b;
+            --input-bg: #1e293b;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --light-bg: #0f172a;
+            --hover-bg: rgba(102, 126, 234, 0.1);
+        }
+
+        * {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body {
+            background-color: var(--bg-color) !important;
+            color: var(--text-color) !important;
+        }
+
+        /* Cards and containers */
+        .card, .wizard-card, .appointment-card, .dashboard-section, 
+        .detail-card, .medical-info, .queue-section, .info-card,
+        .hospital-option, .doctor-option, .dashboard-card, .profile-card {
+            background-color: var(--card-color) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-color) !important;
+        }
+
+        /* Form elements */
+        .form-control, .form-select, input, textarea, select {
+            background-color: var(--input-bg) !important;
+            color: var(--text-color) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        .form-control::placeholder, 
+        .form-select::placeholder, 
+        input::placeholder, 
+        textarea::placeholder {
+            color: var(--muted-color) !important;
+            opacity: 0.7;
+        }
+
+        .form-control:focus, .form-select:focus, input:focus, textarea:focus {
+            background-color: var(--input-bg) !important;
+            color: var(--text-color) !important;
+            border-color: var(--primary-color) !important;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25) !important;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: var(--navbar-bg) !important;
+            border-bottom: 1px solid var(--border-color) !important;
+        }
+
+        .navbar-brand {
+            color: var(--text-color) !important;
+        }
+
+        .navbar .nav-link {
+            color: var(--text-color) !important;
+        }
+
+        .navbar .nav-link:hover {
+            color: var(--primary-color) !important;
+            background-color: var(--hover-bg) !important;
+        }
+
+        .navbar .nav-link.active {
+            color: var(--primary-color) !important;
+            background-color: var(--hover-bg) !important;
+        }
+
+        /* Text elements - Remove !important for better control */
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--text-color);
+        }
+
+        p, span, div, label, td, th, li {
+            color: var(--text-color);
+        }
+
+        /* Muted text */
+        .text-muted, .muted-color, .detail-label, .info-label, 
+        .field-label, .queue-label, small {
+            color: var(--muted-color) !important;
+            opacity: 1;
+        }
+
+        /* Preserve white text on colored backgrounds */
+        .dashboard-header h1,
+        .dashboard-header h2,
+        .dashboard-header p,
+        .wizard-header h1,
+        .wizard-header h2,
+        .wizard-header p,
+        .detail-header h1,
+        .detail-header h2,
+        .detail-header p,
+        .success-header h1,
+        .success-header h2,
+        .success-header p,
+        .profile-header h4,
+        .profile-header p,
+        .text-white,
+        .text-white-50 {
+            color: white !important;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+            border: none !important;
+            color: white !important;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            color: white !important;
+        }
+
+        .btn-secondary {
+            background-color: var(--card-color) !important;
+            color: var(--primary-color) !important;
+            border: 2px solid var(--primary-color) !important;
+        }
+
+        .btn-outline-primary {
+            background-color: transparent !important;
+            color: var(--primary-color) !important;
+            border: 2px solid var(--primary-color) !important;
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color) !important;
+            color: white !important;
+        }
+
+        .btn-outline-danger {
+            background-color: transparent !important;
+            color: var(--error-color) !important;
+            border: 2px solid var(--error-color) !important;
+        }
+
+        .btn-outline-danger:hover {
+            background-color: var(--error-color) !important;
+            color: white !important;
+        }
+
+        /* Shadows */
+        .card, .wizard-card, .appointment-card, .dashboard-section,
+        .detail-card, .medical-info, .dashboard-card, .navbar {
+            box-shadow: 0 2px 8px var(--shadow-color) !important;
+        }
+
+        /* Gradient backgrounds - preserve white text */
+        .dashboard-header,
+        .wizard-header,
+        .detail-header,
+        .success-header,
+        .profile-header.patient-header,
+        .profile-header.doctor-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+            color: white !important;
+        }
+
+        .dashboard-header *,
+        .wizard-header *,
+        .detail-header *,
+        .success-header *,
+        .profile-header * {
+            color: white !important;
+        }
+
+        /* Status badges */
+        .status-badge,
+        .appointment-status {
+            color: inherit !important;
+        }
+
+        .status-scheduled {
+            background: #e3f2fd !important;
+            color: #1565c0 !important;
+        }
+
+        .status-confirmed {
+            background: #e8f5e9 !important;
+            color: #2e7d32 !important;
+        }
+
+        .status-completed {
+            background: #f3e5f5 !important;
+            color: #6a1b9a !important;
+        }
+
+        [data-theme="dark"] .status-scheduled {
+            background: rgba(25, 118, 210, 0.2) !important;
+            color: #90caf9 !important;
+        }
+
+        [data-theme="dark"] .status-confirmed {
+            background: rgba(46, 125, 50, 0.2) !important;
+            color: #81c784 !important;
+        }
+
+        [data-theme="dark"] .status-completed {
+            background: rgba(106, 27, 154, 0.2) !important;
+            color: #ce93d8 !important;
+        }
+
+        /* Progress bar */
+        .progress-bar-container {
+            background-color: var(--card-color) !important;
+            border-bottom: 1px solid var(--border-color) !important;
+        }
+
+        .progress-bar,
+        .progress-line-bg {
+            background-color: var(--border-color) !important;
+        }
+
+        .progress-line-fill {
+            background-color: var(--primary-color) !important;
+        }
+
+        /* Alerts */
+        .alert-error {
+            background-color: rgba(239, 68, 68, 0.1) !important;
+            color: var(--error-color) !important;
+            border-left: 4px solid var(--error-color) !important;
+        }
+
+        .alert-success {
+            background-color: rgba(16, 185, 129, 0.1) !important;
+            color: var(--success-color) !important;
+            border-left: 4px solid var(--success-color) !important;
+        }
+
+        /* Tables */
+        .table {
+            color: var(--text-color) !important;
+            background-color: var(--card-color) !important;
+        }
+
+        .table th, .table td {
+            border-color: var(--border-color) !important;
+            color: var(--text-color) !important;
+        }
+
+        /* Loading and empty states */
+        .loading, .empty-state {
+            color: var(--muted-color) !important;
+        }
+
+        /* Links */
+        a {
+            color: var(--primary-color);
+        }
+
+        a:hover {
+            color: var(--secondary-color);
+        }
+
+        /* Gradient text */
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Info cards */
+        .info-value {
+            color: var(--text-color) !important;
+        }
+
+        .info-value-secondary {
+            color: var(--primary-color) !important;
+        }
+
+        /* Patient/Doctor names and important text */
+        .patient-name,
+        .doctor-name,
+        .appointment-patient-info,
+        .detail-value {
+            color: var(--text-color) !important;
+        }
+
+        /* Appointment meta */
+        .appointment-meta {
+            color: var(--muted-color) !important;
+        }
+
+        .appointment-meta i {
+            color: var(--primary-color) !important;
+        }
+
+        /* Patient details box */
+        .patient-details {
+            background-color: var(--card-color) !important;
+            border: 1px solid var(--border-color) !important;
+            color: var(--text-color) !important;
+        }
+
+        .patient-details strong {
+            color: var(--text-color) !important;
+        }
+
+        /* Profile items */
+        .profile-item {
+            border-bottom: 1px solid var(--border-color) !important;
+        }
+
+        .profile-label {
+            color: var(--muted-color) !important;
+        }
+
+        .profile-value {
+            color: var(--text-color) !important;
+        }
+
+        /* Quick action buttons */
+        .quick-action-btn {
+            background-color: var(--card-color) !important;
+            border: 1px solid var(--border-color) !important;
+            color: var(--text-color) !important;
+        }
+
+        .quick-action-btn:hover {
+            border-color: var(--primary-color) !important;
+            background-color: var(--hover-bg) !important;
+        }
+
+        /* Dashboard avatar icons */
+        .dashboard-avatar,
+        .profile-avatar,
+        .doctor-avatar {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+            color: white !important;
+        }
+
+        /* Tab buttons */
+        .tab-btn {
+            color: var(--muted-color) !important;
+            background-color: transparent !important;
+        }
+
+        .tab-btn.active {
+            color: var(--primary-color) !important;
+            border-bottom-color: var(--primary-color) !important;
+        }
+
+        /* Select options in dark mode */
+        [data-theme="dark"] select option {
+            background-color: var(--input-bg);
+            color: var(--text-color);
+        }
+
+        /* Ensure readability for all form labels */
+        .form-label {
+            color: var(--text-color) !important;
+            font-weight: 500;
+        }
+
+        /* Toast notifications */
+        .toast {
+            background-color: var(--card-color) !important;
+            color: var(--text-color) !important;
+            border: 1px solid var(--border-color) !important;
+        }
+    </style>
+    
+</head>
+<body>
+    {% block content %}{% endblock %}
+    
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Main JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const toggle = document.getElementById("darkModeToggle");
+
+            const savedTheme = localStorage.getItem("theme") || "light";
+            document.documentElement.setAttribute("data-theme", savedTheme);
+
+            if (savedTheme === "dark") {
+                toggle.checked = true;
+            }
+
+            toggle.addEventListener("change", function () {
+                const theme = this.checked ? "dark" : "light";
+                document.documentElement.setAttribute("data-theme", theme);
+                localStorage.setItem("theme", theme);
+            });
+        });
+    </script>
+
+</body>
+</html>
